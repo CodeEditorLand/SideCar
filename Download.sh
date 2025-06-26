@@ -104,7 +104,7 @@ fi
 # Process each platform architecture first
 for PLATFORM_INFO in "${PLATFORM_MATRIX[@]}"; do
 	# Parse platform info string
-	IFS=':' read -r DOWNLOAD_ARCH FILE_EXT TAURI_TRIPLE <<< "$PLATFORM_INFO"
+	IFS=':' read -r DOWNLOAD_ARCH FILE_EXT TAURI_TRIPLE <<<"$PLATFORM_INFO"
 
 	log_info "--- Processing architecture: '$TAURI_TRIPLE' ---"
 
