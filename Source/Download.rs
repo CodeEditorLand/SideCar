@@ -8,9 +8,9 @@
 // Key Features:
 //   - Asynchronous, Concurrent Downloads: Leverages Tokio to download multiple
 //     binaries in parallel, significantly speeding up the process.
-//   - Intelligent Caching: Maintains a `Cache.json` file to track
-//     downloaded versions. It automatically detects if a newer patch version is
-//     available for a requested major version and updates the binary.
+//   - Intelligent Caching: Maintains a `Cache.json` file to track downloaded
+//     versions. It automatically detects if a newer patch version is available
+//     for a requested major version and updates the binary.
 //   - Extensible Design: Easily configured to support new sidecars, versions,
 //     and platforms.
 //   - Robust Error Handling: Uses `anyhow` for clear and concise error
@@ -424,11 +424,8 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 		fs::remove_dir_all(&Task.DestinationDirectory)?;
 	}
 
-	// Create the final parent directory, but not the last component which is the
-	// destination for the move.
-	if let Some(Parent) = Task.DestinationDirectory.parent() {
-		fs::create_dir_all(Parent)?;
-	}
+	// Create the destination directory before moving contents into it.
+	fs::create_dir_all(&Task.DestinationDirectory)?;
 
 	info!("      Installing to: {:?}", Task.DestinationDirectory);
 
