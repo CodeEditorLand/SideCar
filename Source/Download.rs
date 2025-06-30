@@ -41,8 +41,6 @@ struct PlatformTarget {
 	ArchiveExtension:String,
 
 	/// The official Tauri target triple for this platform (e.g.,
-	///
-	///
 	/// "x86_64-pc-windows-msvc").
 	TauriTargetTriple:String,
 }
@@ -141,12 +139,23 @@ impl DownloadCache {
 	}
 
 	/// Saves the current state of the cache to the `Cache.json` file.
-	/// The JSON is pretty-printed for readability.
+	/// The JSON is pretty-printed with tabs for indentation.
 	fn Save(&self, CachePath:&Path) -> Result<()> {
-		let File =
-			File::create(CachePath).with_context(|| format!("Failed to create cache file at {:?}", CachePath))?;
+		// Create an in-memory buffer to write the serialized JSON to.
+		let mut Buffer = Vec::new();
 
-		serde_json::to_writer_pretty(File, self).with_context(|| "Failed to serialize and write to cache file.")?;
+		// Create a formatter that uses a tab character for indentation.
+		let Formatter = serde_json::ser::PrettyFormatter::with_indent(b"\t");
+
+		// Create a serializer with our custom formatter.
+		let mut Serializer = serde_json::Serializer::with_formatter(&mut Buffer, Formatter);
+
+		// Serialize the `DownloadCache` data into the buffer.
+		self.serialize(&mut Serializer)?;
+
+		// Write the buffer's contents to the actual file on disk.
+		fs::write(CachePath, &Buffer)
+			.with_context(|| format!("Failed to write tab-formatted cache to {:?}", CachePath))?;
 
 		Ok(())
 	}
@@ -461,7 +470,6 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 
 	info!("      Installing to: {:?}", Task.DestinationDirectory);
 
-	// *** FIX: Use a robust copy operation for the contents. ***
 	// This is the most reliable method for populating a directory, especially
 	// across drives.
 	let mut Options = FsExtraCopyOptions::new();
