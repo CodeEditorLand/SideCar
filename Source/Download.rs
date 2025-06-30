@@ -21,24 +21,7 @@
 // ==============================================================================
 
 // Allow non_snake_case to meet the user's naming convention requirement.
-#![allow(non_snake_case)]
-
-// --- Imports ---
-use std::{
-	collections::HashMap,
-	env,
-	fs::{self, File},
-	io::{self, Write},
-	path::{Path, PathBuf},
-	sync::{Arc, Mutex},
-};
-
-use anyhow::{Context, Result, anyhow};
-use colored::*;
-use futures::stream::{self, StreamExt};
-use reqwest::Client;
-use serde::{Deserialize, Serialize};
-use tempfile::Builder;
+#![allow(non_snake_case, non_upper_case_globals)]
 
 // --- Type Definitions and Structs ---
 
@@ -265,6 +248,9 @@ fn LogError(Message:&str) {
 	eprintln!("[{}]: {}", "ERROR".red(), Message);
 }
 
+/// Environment variable for setting the log level.
+pub const LogEnv:&str = "RUST_LOG";
+
 // --- Core Logic ---
 
 /// Fetches the official Node.js versions index from nodejs.org.
@@ -484,9 +470,37 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 	Ok(())
 }
 
-/// The main entry point of the application.
+/// Sets up the global logger for the application.
+pub fn Logger() {
+	let LevelText = env::var(LogEnv).unwrap_or_else(|_| "info".to_string());
+
+	let LogLevel = LevelText.parse::<LevelFilter>().unwrap_or(LevelFilter::Info);
+
+	env_logger::Builder::new()
+		.filter_level(LogLevel)
+		.format(|Buffer, Record| {
+			let LevelStyle = match Record.level() {
+				log::Level::Error => "ERROR".red().bold(),
+
+				log::Level::Warn => "WARN".yellow().bold(),
+
+				log::Level::Info => "INFO".green(),
+
+				log::Level::Debug => "DEBUG".blue(),
+
+				log::Level::Trace => "TRACE".magenta(),
+			};
+
+			writeln!(Buffer, "[{}] [{}]: {}", "Download".red(), LevelStyle, Record.args())
+		})
+		.parse_default_env()
+		.init();
+}
+
 #[tokio::main]
-async fn main() -> Result<()> {
+pub async fn Fn() -> Result<()> {
+	Logger();
+
 	LogInfo("Starting Universal Sidecar vendoring process...");
 
 	// --- Setup ---
@@ -611,21 +625,18 @@ async fn main() -> Result<()> {
 		let NumberOfConcurrentJobs = num_cpus::get().min(8);
 
 		// Spawn a Tokio task for each download.
+		// Run tasks concurrently.
 		let Results = stream::iter(TasksToRun)
-.map(|Task| {
-let Client = HttpClient.clone();
+			.map(|Task| {
+				let Client = HttpClient.clone();
 
-let Cache = Arc::clone(&Cache);
+				let Cache = Arc::clone(&Cache);
 
-
-tokio::spawn(async move {
-ProcessDownloadTask(Task, Client, Cache).await
-})
-})
-// Run tasks concurrently.
-.buffer_unordered(NumberOfConcurrentJobs)
-.collect::<Vec<_>>()
-.await;
+				tokio::spawn(async move { ProcessDownloadTask(Task, Client, Cache).await })
+			})
+			.buffer_unordered(NumberOfConcurrentJobs)
+			.collect::<Vec<_>>()
+			.await;
 
 		// Check for any errors that occurred during the concurrent tasks.
 		let mut ErrorsEncountered = 0;
@@ -638,7 +649,7 @@ ProcessDownloadTask(Task, Client, Cache).await
 				ErrorsEncountered += 1;
 			} else if let Ok(Err(AppError)) = Result {
 				// We already logged the error inside `ProcessDownloadTask`, so just count it.
-				// LogError(&format!("A download task failed: {}", AppError));
+				LogError(&format!("A download task failed: {}", AppError));
 
 				ErrorsEncountered += 1;
 			}
@@ -658,3 +669,25 @@ ProcessDownloadTask(Task, Client, Cache).await
 
 	Ok(())
 }
+
+/// Main executable function.
+#[allow(unused)]
+fn main() { Fn(); }
+
+// --- Imports ---
+use std::{
+	collections::HashMap,
+	env,
+	fs::{self, File},
+	io::{self, Write},
+	path::{Path, PathBuf},
+	sync::{Arc, Mutex},
+};
+
+use anyhow::{Context, Result, anyhow};
+use colored::*;
+use futures::stream::{self, StreamExt};
+use log::{LevelFilter, debug, error, info, warn};
+use reqwest::Client;
+use serde::{Deserialize, Serialize};
+use tempfile::Builder;
