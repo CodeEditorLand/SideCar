@@ -151,21 +151,24 @@ impl DownloadCache {
 // --- Configuration ---
 
 /// Returns the root directory where all sidecars will be stored.
-/// It is set to the same path as in the original script.
-fn GetBaseSidecarDirectory() -> PathBuf {
-	// In a real application, this might come from an environment variable or config
-	// file. For this example, it's hardcoded as per the script.
-	// Note: The path `/d/` suggests a WSL or Git Bash environment on Windows.
-	// This Rust code will work correctly on native Windows, Linux, and macOS,
+/// This is determined dynamically by navigating up from the executable's
+/// location. It assumes the executable is located in a path like
+/// `.../SideCar/Target/release/`, and it will resolve the base path to
+/// `.../SideCar/`.
+fn GetBaseSidecarDirectory() -> Result<PathBuf> {
+	// Get the full path to the currently running executable.
+	let CurrentExePath = env::current_exe().context("Failed to get the path of the current executable.")?;
 
-	// interpreting the path according to the OS it's running on.
-	// We adjust the path for cross-platform compatibility.
-	if cfg!(windows) {
-		PathBuf::from("D:/Developer/Application/CodeEditorLand/Land/Element/SideCar")
-	} else {
-		// Assuming a Unix-like path for other systems.
-		PathBuf::from("/d/Developer/Application/CodeEditorLand/Land/Element/SideCar")
-	}
+	// The first .parent() gets the directory containing the exe (e.g., `release`).
+	// We then navigate up two more levels to get to the intended `SideCar`
+	// directory.
+	let BaseDirectory = CurrentExePath
+        .parent() // -> .../SideCar/Target/release
+        .and_then(|p| p.parent()) // -> .../SideCar/Target
+        .and_then(|p| p.parent()) // -> .../SideCar
+        .context("Could not determine the base sidecar directory. Expected to be run from a subdirectory like 'Target/release' within the sidecar project.")?;
+
+	Ok(BaseDirectory.to_path_buf())
 }
 
 /// Defines the matrix of platforms to target. Each entry specifies how to
@@ -471,7 +474,7 @@ pub fn Logger() {
 				log::Level::Trace => "TRACE".magenta(),
 			};
 
-			writeln!(Buffer, "[{}] [{}]: {}", "Download".cyan(), LevelStyle, Record.args())
+			writeln!(Buffer, "[{}] [{}]: {}", "Download".red(), LevelStyle, Record.args())
 		})
 		.parse_default_env()
 		.init();
@@ -484,7 +487,7 @@ pub async fn Fn() -> Result<()> {
 	info!("Starting Universal Sidecar vendoring process...");
 
 	// --- Setup ---
-	let BaseSidecarDirectory = GetBaseSidecarDirectory();
+	let BaseSidecarDirectory = GetBaseSidecarDirectory()?;
 
 	let CachePath = BaseSidecarDirectory.join("Download.cache");
 
