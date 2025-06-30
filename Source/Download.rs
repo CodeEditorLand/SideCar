@@ -106,7 +106,7 @@ impl DownloadCache {
 	/// directory. If the file doesn't exist, it returns a new, empty cache.
 	fn Load(CachePath:&Path) -> Self {
 		if !CachePath.exists() {
-			LogInfo("Cache file not found. A new one will be created.");
+			info!("Cache file not found. A new one will be created.");
 
 			return DownloadCache::default();
 		}
@@ -115,7 +115,7 @@ impl DownloadCache {
 			Ok(Contents) => Contents,
 
 			Err(Error) => {
-				LogWarn(&format!("Failed to read cache file: {}. Starting with an empty cache.", Error));
+				warn!("Failed to read cache file: {}. Starting with an empty cache.", Error);
 
 				return DownloadCache::default();
 			},
@@ -123,13 +123,13 @@ impl DownloadCache {
 
 		match serde_json::from_str(&FileContents) {
 			Ok(Cache) => {
-				LogInfo("Successfully loaded download cache.");
+				info!("Successfully loaded download cache.");
 
 				Cache
 			},
 
 			Err(Error) => {
-				LogWarn(&format!("Failed to parse cache file: {}. Starting with an empty cache.", Error));
+				warn!("Failed to parse cache file: {}. Starting with an empty cache.", Error);
 
 				DownloadCache::default()
 			},
@@ -228,26 +228,6 @@ fn GetSidecarsToFetch() -> HashMap<String, Vec<String>> {
 
 // --- Helper Functions ---
 
-/// Logs an informational message to the console with blue coloring.
-fn LogInfo(Message:&str) {
-	println!("[{}]: {}", "INFO".blue(), Message);
-}
-
-/// Logs a success message to the console with green coloring.
-fn LogSuccess(Message:&str) {
-	println!("[{}]: {}", "SUCCESS".green(), Message);
-}
-
-/// Logs a warning message to the console with yellow coloring.
-fn LogWarn(Message:&str) {
-	println!("[{}]: {}", "WARN".yellow(), Message);
-}
-
-/// Logs an error message to the console with red coloring.
-fn LogError(Message:&str) {
-	eprintln!("[{}]: {}", "ERROR".red(), Message);
-}
-
 /// Environment variable for setting the log level.
 pub const LogEnv:&str = "RUST_LOG";
 
@@ -255,7 +235,7 @@ pub const LogEnv:&str = "RUST_LOG";
 
 /// Fetches the official Node.js versions index from nodejs.org.
 async fn FetchNodeVersions(Client:&Client) -> Result<Vec<NodeVersionInfo>> {
-	LogInfo("Fetching Node.js version index for resolving versions...");
+	info!("Fetching Node.js version index for resolving versions...");
 
 	let Response = Client
 		.get("https://nodejs.org/dist/index.json")
@@ -286,7 +266,7 @@ fn ResolveLatestPatchVersion(MajorVersion:&str, AllVersions:&[NodeVersionInfo]) 
 		.map(|v| v.version.clone())
 }
 
-/// Downloads a file from a URL to a specified path, showing progress.
+/// Downloads a file from a URL to a specified path.
 async fn DownloadFile(Client:&Client, URL:&str, DestinationPath:&Path) -> Result<()> {
 	let mut Response = Client.get(URL).send().await?.error_for_status()?;
 
@@ -395,30 +375,30 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 
 	let ArchivePath = TempDirectory.path().join(ArchiveName);
 
-	LogInfo(&format!(
+	info!(
 		"      [{}/{}] Downloading from: {}",
 		Task.TauriTargetTriple, Task.SidecarName, Task.DownloadURL
-	));
+	);
 
 	if let Err(Error) = DownloadFile(&Client, &Task.DownloadURL, &ArchivePath).await {
-		LogError(&format!(
+		error!(
 			"      [{}/{}] Failed to download {}: {}",
 			Task.TauriTargetTriple, Task.SidecarName, ArchiveName, Error
-		));
+		);
 
 		return Err(Error);
 	}
-	LogInfo(&format!(
+	info!(
 		"      [{}/{}] Extracting core binaries and modules...",
 		Task.TauriTargetTriple, Task.SidecarName
-	));
+	);
 
 	if let Err(Error) = ExtractArchive(&Task.ArchiveType, &ArchivePath, TempDirectory.path(), &Task.ExtractedFolderName)
 	{
-		LogError(&format!(
+		error!(
 			"      [{}/{}] Failed to extract {}: {}",
 			Task.TauriTargetTriple, Task.SidecarName, ArchiveName, Error
-		));
+		);
 
 		return Err(Error);
 	}
@@ -428,7 +408,7 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 	if !ExtractedPath.exists() {
 		let ErrorMessage = format!("      Could not find extracted folder: {:?}", ExtractedPath);
 
-		LogError(&ErrorMessage);
+		error!("{}", ErrorMessage);
 
 		return Err(anyhow!(ErrorMessage));
 	}
@@ -436,14 +416,14 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 	// If the destination directory already exists (from a previous version), remove
 	// it.
 	if Task.DestinationDirectory.exists() {
-		LogInfo(&format!("      Removing old version at: {:?}", Task.DestinationDirectory));
+		info!("      Removing old version at: {:?}", Task.DestinationDirectory);
 
 		fs::remove_dir_all(&Task.DestinationDirectory)?;
 	}
 
 	fs::create_dir_all(&Task.DestinationDirectory)?;
 
-	LogInfo(&format!("      Installing to: {:?}", Task.DestinationDirectory));
+	info!("      Installing to: {:?}", Task.DestinationDirectory);
 
 	// Move the *contents* of the extracted folder to the destination.
 	for Entry in fs::read_dir(ExtractedPath)? {
@@ -461,10 +441,10 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 
 	LockedCache.Entries.insert(CacheKey, Task.FullVersion.clone());
 
-	LogSuccess(&format!(
+	info!(
 		"    v{} ({}) for '{}' is now up to date.",
 		Task.MajorVersion, Task.FullVersion, Task.TauriTargetTriple
-	));
+	);
 
 	// TempDirectory is automatically cleaned up when it goes out of scope here.
 	Ok(())
@@ -491,7 +471,7 @@ pub fn Logger() {
 				log::Level::Trace => "TRACE".magenta(),
 			};
 
-			writeln!(Buffer, "[{}] [{}]: {}", "Download".red(), LevelStyle, Record.args())
+			writeln!(Buffer, "[{}] [{}]: {}", "Download".cyan(), LevelStyle, Record.args())
 		})
 		.parse_default_env()
 		.init();
@@ -501,7 +481,7 @@ pub fn Logger() {
 pub async fn Fn() -> Result<()> {
 	Logger();
 
-	LogInfo("Starting Universal Sidecar vendoring process...");
+	info!("Starting Universal Sidecar vendoring process...");
 
 	// --- Setup ---
 	let BaseSidecarDirectory = GetBaseSidecarDirectory();
@@ -526,10 +506,10 @@ pub async fn Fn() -> Result<()> {
 	// --- Task Generation Phase (Sequential) ---
 	// First, we determine which downloads are necessary by checking the cache.
 	for Platform in &PlatformMatrix {
-		LogInfo(&format!("--- Processing architecture: '{}' ---", Platform.TauriTargetTriple));
+		info!("--- Processing architecture: '{}' ---", Platform.TauriTargetTriple);
 
 		for (SidecarName, MajorVersions) in &SidecarsToFetch {
-			LogInfo(&format!("  -> Processing sidecar: '{}'", SidecarName));
+			info!("  -> Processing sidecar: '{}'", SidecarName);
 
 			for MajorVersion in MajorVersions {
 				let DestinationDirectory = BaseSidecarDirectory
@@ -543,10 +523,10 @@ pub async fn Fn() -> Result<()> {
 						Some(Version) => Version,
 
 						None => {
-							LogWarn(&format!(
+							warn!(
 								"      Could not resolve a specific version for Node.js v{}. Skipping.",
 								MajorVersion
-							));
+							);
 
 							continue;
 						},
@@ -558,23 +538,20 @@ pub async fn Fn() -> Result<()> {
 					let CachedVersion = Cache.lock().unwrap().Entries.get(&CacheKey).cloned();
 
 					if Some(FullVersion.clone()) == CachedVersion {
-						LogSuccess(&format!(
-							"    v{} ({}) is already up to date, skipping.",
-							MajorVersion, FullVersion
-						));
+						info!("    v{} ({}) is already up to date, skipping.", MajorVersion, FullVersion);
 
 						continue;
 					}
 
 					if CachedVersion.is_some() {
-						LogInfo(&format!(
+						info!(
 							"    Found newer patch for v{}: {} -> {}. Scheduling update.",
 							MajorVersion,
 							CachedVersion.unwrap(),
 							FullVersion
-						));
+						);
 					} else {
-						LogInfo(&format!("    Processing v{} (resolved to {})...", MajorVersion, FullVersion));
+						info!("    Processing v{} (resolved to {})...", MajorVersion, FullVersion);
 					}
 
 					let ArchiveExtension = &Platform.ArchiveExtension;
@@ -614,12 +591,9 @@ pub async fn Fn() -> Result<()> {
 
 	// --- Concurrent Execution Phase ---
 	if TasksToRun.is_empty() {
-		LogSuccess("All sidecar binaries are already up to date.");
+		info!("All sidecar binaries are already up to date.");
 	} else {
-		LogInfo(&format!(
-			"Found {} tasks to run. Starting concurrent downloads...",
-			TasksToRun.len()
-		));
+		info!("Found {} tasks to run. Starting concurrent downloads...", TasksToRun.len());
 
 		// Limit to 8 concurrent jobs or num CPUs, whichever is smaller.
 		let NumberOfConcurrentJobs = num_cpus::get().min(8);
@@ -644,35 +618,44 @@ pub async fn Fn() -> Result<()> {
 		for Result in Results {
 			// The first result is from tokio::spawn, the second from our function
 			if let Err(JoinError) = Result {
-				LogError(&format!("A download task panicked or was cancelled: {}", JoinError));
+				error!("A download task panicked or was cancelled: {}", JoinError);
 
 				ErrorsEncountered += 1;
 			} else if let Ok(Err(AppError)) = Result {
 				// We already logged the error inside `ProcessDownloadTask`, so just count it.
-				LogError(&format!("A download task failed: {}", AppError));
+				// Re-logging here to ensure it's captured at a higher level if needed.
+				error!("A download task failed: {}", AppError);
 
 				ErrorsEncountered += 1;
 			}
 		}
 
 		if ErrorsEncountered > 0 {
-			LogError(&format!("Completed with {} errors.", ErrorsEncountered));
+			error!("Completed with {} errors.", ErrorsEncountered);
 		}
 	}
 
 	// --- Finalization ---
-	LogInfo("Saving updated cache...");
+	info!("Saving updated cache...");
 
 	Cache.lock().unwrap().Save(&CachePath)?;
 
-	LogSuccess("All sidecar binaries have been successfully processed and organized.");
+	info!("All sidecar binaries have been successfully processed and organized.");
 
 	Ok(())
 }
 
 /// Main executable function.
 #[allow(unused)]
-fn main() { Fn(); }
+fn main() {
+	// We use a block here to handle the Result from Fn.
+	if let Err(Error) = Fn() {
+		// The logger should already be initialized by Fn, so we can use it.
+		error!("The application encountered a fatal error: {}", Error);
+
+		std::process::exit(1);
+	}
+}
 
 // --- Imports ---
 use std::{
@@ -687,7 +670,7 @@ use std::{
 use anyhow::{Context, Result, anyhow};
 use colored::*;
 use futures::stream::{self, StreamExt};
-use log::{LevelFilter, debug, error, info, warn};
+use log::{LevelFilter, error, info, warn};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use tempfile::Builder;
