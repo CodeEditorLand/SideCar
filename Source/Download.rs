@@ -468,11 +468,17 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 
 	info!("      Installing to: {:?}", Task.DestinationDirectory);
 
-	// Use a simple and robust `fs::rename` since the temporary directory and
-	// the final destination are now guaranteed to be on the same drive.
-	fs::rename(&ExtractedPath, &Task.DestinationDirectory).with_context(|| {
+	fs::create_dir_all(&Task.DestinationDirectory)?;
+
+	let mut Options = FsExtraCopyOptions::new();
+
+	Options.content_only = true;
+
+	Options.overwrite = true;
+
+	fs_extra::dir::copy(&ExtractedPath, &Task.DestinationDirectory, &Options).with_context(|| {
 		format!(
-			"Failed to rename/move extracted directory from {:?} to {:?}",
+			"Failed to copy contents from {:?} to {:?}",
 			ExtractedPath, Task.DestinationDirectory
 		)
 	})?;
@@ -538,8 +544,6 @@ pub async fn Fn() -> Result<()> {
 		.with_context(|| format!("Failed to create temporary directory at {:?}", TempDownloadsDirectory))?;
 
 	let CachePath = BaseSidecarDirectory.join("Cache.json");
-
-	fs::create_dir_all(&BaseSidecarDirectory).context("Failed to create base sidecar directory.")?;
 
 	let Cache = Arc::new(Mutex::new(DownloadCache::Load(&CachePath)));
 
@@ -715,6 +719,7 @@ use std::{
 
 use anyhow::{Context, Result, anyhow};
 use colored::*;
+use fs_extra::dir::CopyOptions as FsExtraCopyOptions;
 use futures::stream::{self, StreamExt};
 use log::{LevelFilter, error, info, warn};
 use reqwest::Client;
