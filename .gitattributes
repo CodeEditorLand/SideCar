@@ -7,47 +7,23 @@
 #
 # The `-text` attribute is used to prevent Git from normalizing line endings,
 # which is critical for binary files and scripts.
+#
+# This file is automatically managed by the sidecar vendor script.
 ################################################################################
 
 # --- Rule Definitions ---
-
-# 1. Track all main executables and wrapper scripts with LFS.
-#    This includes the primary `node` binary as well as the `npm`, `npx`, and
-#    `corepack` command scripts for all platforms.
-
-#    - Main `node` executable (Linux/macOS)
 **/NODE/**/bin/node filter=lfs diff=lfs merge=lfs -text
-
-#    - Main `node.exe` executable (Windows)
 **/NODE/**/node.exe filter=lfs diff=lfs merge=lfs -text
-
-#    - Wrapper scripts for `npm`, `npx`, `corepack` (Linux/macOS)
 **/NODE/**/bin/npm filter=lfs diff=lfs merge=lfs -text
 **/NODE/**/bin/npx filter=lfs diff=lfs merge=lfs -text
 **/NODE/**/bin/corepack filter=lfs diff=lfs merge=lfs -text
-
-#    - Wrapper scripts for `npm`, `npx`, `corepack` (Windows)
-#      Note: The patterns without `/bin/` target the Windows file layout.
 **/NODE/**/npm filter=lfs diff=lfs merge=lfs -text
 **/NODE/**/npm.cmd filter=lfs diff=lfs merge=lfs -text
 **/NODE/**/npx filter=lfs diff=lfs merge=lfs -text
 **/NODE/**/npx.cmd filter=lfs diff=lfs merge=lfs -text
 **/NODE/**/corepack filter=lfs diff=lfs merge=lfs -text
 **/NODE/**/corepack.cmd filter=lfs diff=lfs merge=lfs -text
-
-# 2. Track the entire contents of the vendored npm and corepack modules.
-#    While they contain many small JS files, treating the entire module as an
-#    LFS object is clean and prevents thousands of small files from bloating
-#    the Git history every time you update a Node version.
-
-#    - For `npm` module (Windows layout)
 **/NODE/**/node_modules/npm/** filter=lfs diff=lfs merge=lfs -text
-
-#    - For `npm` module (Linux/macOS layout)
 **/NODE/**/lib/node_modules/npm/** filter=lfs diff=lfs merge=lfs -text
-
-#    - For `corepack` module (Windows layout)
 **/NODE/**/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text
-
-#    - For `corepack` module (Linux/macOS layout)
 **/NODE/**/lib/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text

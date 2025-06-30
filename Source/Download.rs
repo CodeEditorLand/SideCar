@@ -32,8 +32,6 @@
 #[derive(Clone, Debug)]
 struct PlatformTarget {
 	/// The identifier used in the download URL (e.g., "win-x64",
-	///
-	///
 	/// "linux-arm64").
 	DownloadIdentifier:String,
 
@@ -78,6 +76,9 @@ struct DownloadTask {
 	/// The complete URL to download the archive from.
 	DownloadURL:String,
 
+	/// The directory where temporary folders for this task will be created.
+	TempParentDirectory:PathBuf,
+
 	/// The final destination directory for the extracted binaries.
 	DestinationDirectory:PathBuf,
 
@@ -100,7 +101,7 @@ struct DownloadCache {
 	/// The core data structure for the cache.
 	/// Key: A unique string like "x86_64-pc-windows-msvc/NODE/24".
 	/// Value: The full version string, like "v24.0.0".
-	Entry:HashMap<String, String>,
+	Entries:HashMap<String, String>,
 }
 
 impl DownloadCache {
@@ -262,7 +263,6 @@ fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
 # main repository history small and fast.
 #
 # The `-text` attribute is used to prevent Git from normalizing line endings,
-
 # which is critical for binary files and scripts.
 #
 # This file is automatically managed by the sidecar vendor script.
@@ -397,7 +397,6 @@ fn ExtractArchive(ArchiveType:&ArchiveType, ArchivePath:&Path, ExtractionDirecto
 
 			Archive.extract(ExtractionDirectory)?;
 		},
-
 		ArchiveType::TarGz => {
 			let File = File::open(ArchivePath)?;
 
@@ -415,7 +414,11 @@ fn ExtractArchive(ArchiveType:&ArchiveType, ArchivePath:&Path, ExtractionDirecto
 /// The main asynchronous function for processing a single download task.
 /// This function is designed to be run concurrently for multiple tasks.
 async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<DownloadCache>>) -> Result<()> {
-	let TempDirectory = Builder::new().prefix("sidecar-download-").tempdir()?;
+	// Create the temporary directory inside the designated "Temporary" subfolder.
+	let TempDirectory = Builder::new()
+		.prefix("sidecar-download-")
+		.tempdir_in(&Task.TempParentDirectory)
+		.context("Failed to create temporary directory.")?;
 
 	let ArchiveName = Task.DownloadURL.split('/').last().unwrap_or("download.tmp");
 
@@ -437,7 +440,6 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 
 	info!("      [{}/{}] Extracting archive...", Task.TauriTargetTriple, Task.SidecarName);
 
-	// Perform a full extraction now.
 	if let Err(Error) = ExtractArchive(&Task.ArchiveType, &ArchivePath, TempDirectory.path()) {
 		error!(
 			"      [{}/{}] Failed to extract {}: {}",
@@ -457,30 +459,20 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 		return Err(anyhow!(ErrorMessage));
 	}
 
-	// If the destination directory already exists (from a previous version), remove
-	// it.
+	// If the destination directory already exists, remove it.
 	if Task.DestinationDirectory.exists() {
 		info!("      Removing old version at: {:?}", Task.DestinationDirectory);
 
 		fs::remove_dir_all(&Task.DestinationDirectory)?;
 	}
 
-	// Ensure the destination directory exists before copying into it.
-	fs::create_dir_all(&Task.DestinationDirectory)?;
-
 	info!("      Installing to: {:?}", Task.DestinationDirectory);
 
-	// This is the most reliable method for populating a directory, especially
-	// across drives.
-	let mut Options = FsExtraCopyOptions::new();
-
-	Options.content_only = true;
-
-	Options.overwrite = true;
-
-	fs_extra::dir::copy(&ExtractedPath, &Task.DestinationDirectory, &Options).with_context(|| {
+	// Use a simple and robust `fs::rename` since the temporary directory and
+	// the final destination are now guaranteed to be on the same drive.
+	fs::rename(&ExtractedPath, &Task.DestinationDirectory).with_context(|| {
 		format!(
-			"Failed to copy contents from {:?} to {:?}",
+			"Failed to rename/move extracted directory from {:?} to {:?}",
 			ExtractedPath, Task.DestinationDirectory
 		)
 	})?;
@@ -490,14 +482,13 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 
 	let mut LockedCache = Cache.lock().unwrap();
 
-	LockedCache.Entry.insert(CacheKey, Task.FullVersion.clone());
+	LockedCache.Entries.insert(CacheKey, Task.FullVersion.clone());
 
 	info!(
 		"    v{} ({}) for '{}' is now up to date.",
 		Task.MajorVersion, Task.FullVersion, Task.TauriTargetTriple
 	);
 
-	// TempDirectory is automatically cleaned up when it goes out of scope here.
 	Ok(())
 }
 
@@ -539,6 +530,12 @@ pub async fn Fn() -> Result<()> {
 
 	// Manage the .gitattributes file for Git LFS.
 	UpdateGitattributes(&BaseSidecarDirectory)?;
+
+	// Define and create the dedicated directory for temporary downloads.
+	let TempDownloadsDirectory = BaseSidecarDirectory.join("Temporary");
+
+	fs::create_dir_all(&TempDownloadsDirectory)
+		.with_context(|| format!("Failed to create temporary directory at {:?}", TempDownloadsDirectory))?;
 
 	let CachePath = BaseSidecarDirectory.join("Cache.json");
 
@@ -589,7 +586,7 @@ pub async fn Fn() -> Result<()> {
 					// Check cache to see if we need to download/update.
 					let CacheKey = format!("{}/{}/{}", &Platform.TauriTargetTriple, SidecarName, MajorVersion);
 
-					let CachedVersion = Cache.lock().unwrap().Entry.get(&CacheKey).cloned();
+					let CachedVersion = Cache.lock().unwrap().Entries.get(&CacheKey).cloned();
 
 					if Some(FullVersion.clone()) == CachedVersion {
 						info!("    v{} ({}) is already up to date, skipping.", MajorVersion, FullVersion);
@@ -619,19 +616,13 @@ pub async fn Fn() -> Result<()> {
 
 					let Task = DownloadTask {
 						SidecarName:SidecarName.clone(),
-
 						MajorVersion:MajorVersion.clone(),
-
 						FullVersion,
-
 						DownloadURL,
-
+						TempParentDirectory:TempDownloadsDirectory.clone(), // Pass temp dir to task
 						DestinationDirectory,
-
 						ArchiveType:if ArchiveExtension == "zip" { ArchiveType::Zip } else { ArchiveType::TarGz },
-
 						ExtractedFolderName,
-
 						TauriTargetTriple:Platform.TauriTargetTriple.clone(),
 					};
 
@@ -724,7 +715,6 @@ use std::{
 
 use anyhow::{Context, Result, anyhow};
 use colored::*;
-use fs_extra::dir::CopyOptions as FsExtraCopyOptions;
 use futures::stream::{self, StreamExt};
 use log::{LevelFilter, error, info, warn};
 use reqwest::Client;
