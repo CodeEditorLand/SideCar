@@ -31,6 +31,7 @@
 struct PlatformTarget {
 	/// The identifier used in the download URL (e.g., "win-x64",
 	///
+	///
 	/// "linux-arm64").
 	DownloadIdentifier:String,
 
@@ -38,6 +39,7 @@ struct PlatformTarget {
 	ArchiveExtension:String,
 
 	/// The official Tauri target triple for this platform (e.g.,
+	///
 	///
 	/// "x86_64-pc-windows-msvc").
 	TauriTargetTriple:String,
@@ -163,10 +165,13 @@ fn GetBaseSidecarDirectory() -> Result<PathBuf> {
 	// We then navigate up two more levels to get to the intended `SideCar`
 	// directory.
 	let BaseDirectory = CurrentExePath
-        .parent() // -> .../SideCar/Target/release
-        .and_then(|p| p.parent()) // -> .../SideCar/Target
-        .and_then(|p| p.parent()) // -> .../SideCar
-        .context("Could not determine the base sidecar directory. Expected to be run from a subdirectory like 'Target/release' within the sidecar project.")?;
+		.parent()
+		.and_then(|p| p.parent())
+		.and_then(|p| p.parent())
+		.context(
+			"Could not determine the base sidecar directory. Expected to be run from a subdirectory like \
+			 'Target/release' within the sidecar project.",
+		)?;
 
 	Ok(BaseDirectory.to_path_buf())
 }
@@ -285,58 +290,18 @@ async fn DownloadFile(Client:&Client, URL:&str, DestinationPath:&Path) -> Result
 }
 
 /// Extracts the contents of a downloaded archive to a target directory.
-/// This function handles both `.zip` and `.tar.gz` files selectively,
-///
-/// mimicking the behavior of the original script.
-fn ExtractArchive(
-	ArchiveType:&ArchiveType,
+/// This function now performs a full extraction to ensure a complete
+/// distribution.
+fn ExtractArchive(ArchiveType:&ArchiveType, ArchivePath:&Path, ExtractionDirectory:&Path) -> Result<()> {
+	info!("Performing a full extraction of the archive...");
 
-	ArchivePath:&Path,
-
-	ExtractionDirectory:&Path,
-
-	ExtractedFolderName:&str,
-) -> Result<()> {
 	match ArchiveType {
 		ArchiveType::Zip => {
 			let File = File::open(ArchivePath)?;
 
 			let mut Archive = zip::ZipArchive::new(File)?;
 
-			// Selectively extract required files for Windows
-			for i in 0..Archive.len() {
-				let mut ZipFile = Archive.by_index(i)?;
-
-				let Output = match ZipFile.enclosed_name() {
-					Some(path) => path.to_owned(),
-
-					None => continue,
-				};
-
-				// Only extract specific files/folders
-				if Output.starts_with(format!("{}/node.exe", ExtractedFolderName))
-					|| Output.starts_with(format!("{}/npm", ExtractedFolderName))
-					|| Output.starts_with(format!("{}/npx", ExtractedFolderName))
-					|| Output.starts_with(format!("{}/corepack", ExtractedFolderName))
-					|| Output.starts_with(format!("{}/node_modules/npm/", ExtractedFolderName))
-					|| Output.starts_with(format!("{}/node_modules/corepack/", ExtractedFolderName))
-				{
-					let FullOutput = ExtractionDirectory.join(Output);
-
-					if ZipFile.name().ends_with('/') {
-						fs::create_dir_all(&FullOutput)?;
-					} else {
-						if let Some(p) = FullOutput.parent() {
-							if !p.exists() {
-								fs::create_dir_all(p)?;
-							}
-						}
-						let mut OutFile = File::create(&FullOutput)?;
-
-						io::copy(&mut ZipFile, &mut OutFile)?;
-					}
-				}
-			}
+			Archive.extract(ExtractionDirectory)?;
 		},
 
 		ArchiveType::TarGz => {
@@ -346,26 +311,10 @@ fn ExtractArchive(
 
 			let mut Archive = tar::Archive::new(Decompressor);
 
-			// Let the `tar` crate handle extraction, but we must filter entries.
-			// This is more complex than a full unpack.
-			for EntryResult in Archive.entries()? {
-				let mut Entry = EntryResult?;
-
-				let Path = Entry.path()?.to_path_buf();
-
-				// Only extract specific files/folders for Unix-like systems
-				if Path.starts_with(format!("{}/bin/node", ExtractedFolderName))
-					|| Path.starts_with(format!("{}/bin/npm", ExtractedFolderName))
-					|| Path.starts_with(format!("{}/bin/npx", ExtractedFolderName))
-					|| Path.starts_with(format!("{}/bin/corepack", ExtractedFolderName))
-					|| Path.starts_with(format!("{}/lib/node_modules/npm", ExtractedFolderName))
-					|| Path.starts_with(format!("{}/lib/node_modules/corepack", ExtractedFolderName))
-				{
-					Entry.unpack_in(ExtractionDirectory)?;
-				}
-			}
+			Archive.unpack(ExtractionDirectory)?;
 		},
 	}
+
 	Ok(())
 }
 
@@ -391,13 +340,11 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 
 		return Err(Error.into());
 	}
-	info!(
-		"      [{}/{}] Extracting core binaries and modules...",
-		Task.TauriTargetTriple, Task.SidecarName
-	);
 
-	if let Err(Error) = ExtractArchive(&Task.ArchiveType, &ArchivePath, TempDirectory.path(), &Task.ExtractedFolderName)
-	{
+	info!("      [{}/{}] Extracting archive...", Task.TauriTargetTriple, Task.SidecarName);
+
+	// Perform a full extraction now.
+	if let Err(Error) = ExtractArchive(&Task.ArchiveType, &ArchivePath, TempDirectory.path()) {
 		error!(
 			"      [{}/{}] Failed to extract {}: {}",
 			Task.TauriTargetTriple, Task.SidecarName, ArchiveName, Error
@@ -424,18 +371,23 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 		fs::remove_dir_all(&Task.DestinationDirectory)?;
 	}
 
-	// Create the destination directory before moving contents into it.
+	// Ensure the destination directory exists before copying into it.
 	fs::create_dir_all(&Task.DestinationDirectory)?;
 
 	info!("      Installing to: {:?}", Task.DestinationDirectory);
 
-	// This replaces the `fs::rename` loop which fails on Windows when the temp
-	// directory and destination directory are on different drives.
+	// *** FIX: Use a robust copy operation for the contents. ***
+	// This is the most reliable method for populating a directory, especially
+	// across drives.
 	let mut Options = FsExtraCopyOptions::new();
+
 	Options.content_only = true;
-	FsExtraDir::move_dir(&ExtractedPath, &Task.DestinationDirectory, &Options).with_context(|| {
+
+	Options.overwrite = true;
+
+	fs_extra::dir::copy(&ExtractedPath, &Task.DestinationDirectory, &Options).with_context(|| {
 		format!(
-			"Failed to move contents from {:?} to {:?}",
+			"Failed to copy contents from {:?} to {:?}",
 			ExtractedPath, Task.DestinationDirectory
 		)
 	})?;
@@ -589,6 +541,7 @@ pub async fn Fn() -> Result<()> {
 
 					TasksToRun.push(Task);
 				}
+
 				// To add Deno, you would add an `else if SidecarName == "DENO"`
 				// block here.
 			}
@@ -668,14 +621,14 @@ use std::{
 	collections::HashMap,
 	env,
 	fs::{self, File},
-	io::{self, Write},
+	io::Write,
 	path::{Path, PathBuf},
 	sync::{Arc, Mutex},
 };
 
 use anyhow::{Context, Result, anyhow};
 use colored::*;
-use fs_extra::{dir as FsExtraDir, dir::CopyOptions as FsExtraCopyOptions};
+use fs_extra::dir::CopyOptions as FsExtraCopyOptions;
 use futures::stream::{self, StreamExt};
 use log::{LevelFilter, error, info, warn};
 use reqwest::Client;
