@@ -32,6 +32,7 @@
 #[derive(Clone, Debug)]
 struct PlatformTarget {
 	/// The identifier used in the download URL (e.g., "win-x64",
+	///
 	/// "linux-arm64").
 	DownloadIdentifier:String,
 
@@ -39,6 +40,7 @@ struct PlatformTarget {
 	ArchiveExtension:String,
 
 	/// The official Tauri target triple for this platform (e.g.,
+	///
 	/// "x86_64-pc-windows-msvc").
 	TauriTargetTriple:String,
 }
@@ -466,19 +468,16 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 		fs::remove_dir_all(&Task.DestinationDirectory)?;
 	}
 
+	// Ensure the parent of the final destination exists.
+	if let Some(Parent) = Task.DestinationDirectory.parent() {
+		fs::create_dir_all(Parent)?;
+	}
+
 	info!("      Installing to: {:?}", Task.DestinationDirectory);
 
-	fs::create_dir_all(&Task.DestinationDirectory)?;
-
-	let mut Options = FsExtraCopyOptions::new();
-
-	Options.content_only = true;
-
-	Options.overwrite = true;
-
-	fs_extra::dir::copy(&ExtractedPath, &Task.DestinationDirectory, &Options).with_context(|| {
+	fs::rename(&ExtractedPath, &Task.DestinationDirectory).with_context(|| {
 		format!(
-			"Failed to copy contents from {:?} to {:?}",
+			"Failed to rename/move extracted directory from {:?} to {:?}",
 			ExtractedPath, Task.DestinationDirectory
 		)
 	})?;
@@ -623,7 +622,7 @@ pub async fn Fn() -> Result<()> {
 						MajorVersion:MajorVersion.clone(),
 						FullVersion,
 						DownloadURL,
-						TempParentDirectory:TempDownloadsDirectory.clone(), // Pass temp dir to task
+						TempParentDirectory:TempDownloadsDirectory.clone(),
 						DestinationDirectory,
 						ArchiveType:if ArchiveExtension == "zip" { ArchiveType::Zip } else { ArchiveType::TarGz },
 						ExtractedFolderName,
@@ -719,7 +718,6 @@ use std::{
 
 use anyhow::{Context, Result, anyhow};
 use colored::*;
-use fs_extra::dir::CopyOptions as FsExtraCopyOptions;
 use futures::stream::{self, StreamExt};
 use log::{LevelFilter, error, info, warn};
 use reqwest::Client;
