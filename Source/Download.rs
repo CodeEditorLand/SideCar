@@ -11,6 +11,8 @@
 //   - Intelligent Caching: Maintains a `Cache.json` file to track downloaded
 //     versions. It automatically detects if a newer patch version is available
 //     for a requested major version and updates the binary.
+//   - Git LFS Management: Automatically creates or updates the `.gitattributes`
+//     file to ensure large binaries are tracked by Git LFS.
 //   - Extensible Design: Easily configured to support new sidecars, versions,
 //     and platforms.
 //   - Robust Error Handling: Uses `anyhow` for clear and concise error
@@ -100,7 +102,7 @@ struct DownloadCache {
 	/// The core data structure for the cache.
 	/// Key: A unique string like "x86_64-pc-windows-msvc/NODE/24".
 	/// Value: The full version string, like "v24.0.0".
-	Entries:HashMap<String, String>,
+	Entry:HashMap<String, String>,
 }
 
 impl DownloadCache {
@@ -238,6 +240,89 @@ fn GetSidecarsToFetch() -> HashMap<String, Vec<String>> {
 
 /// Environment variable for setting the log level.
 pub const LogEnv:&str = "RUST_LOG";
+
+/// Manages the `.gitattributes` file to ensure binaries are tracked by Git LFS.
+/// If the file does not exist, it is created. If it exists, missing rules are
+/// appended.
+fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
+	const GITATTRIBUTES_HEADER:&str = r#"################################################################################
+# Git LFS configuration for vendored Tauri Sidecars
+#
+# This file tells Git to use LFS (Large File Storage) for the heavy binary
+# files and modules downloaded by the sidecar vendoring script. This keeps the
+# main repository history small and fast.
+#
+# The `-text` attribute is used to prevent Git from normalizing line endings,
+
+# which is critical for binary files and scripts.
+#
+# This file is automatically managed by the sidecar vendor script.
+################################################################################
+
+# --- Rule Definitions ---"#;
+
+	const GITATTRIBUTES_RULES:&[&str] = &[
+		// Main executables
+		"**/NODE/**/bin/node filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/node.exe filter=lfs diff=lfs merge=lfs -text",
+		// Wrapper scripts (Unix)
+		"**/NODE/**/bin/npm filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/bin/npx filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/bin/corepack filter=lfs diff=lfs merge=lfs -text",
+		// Wrapper scripts (Windows)
+		"**/NODE/**/npm filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/npm.cmd filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/npx filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/npx.cmd filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/corepack filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/corepack.cmd filter=lfs diff=lfs merge=lfs -text",
+		// Module directories
+		"**/NODE/**/node_modules/npm/** filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/lib/node_modules/npm/** filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/lib/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text",
+	];
+
+	let GitattributesPath = BaseDirectory.join(".gitattributes");
+
+	if !GitattributesPath.exists() {
+		info!("Creating .gitattributes file to track binaries with Git LFS.");
+
+		let mut File = File::create(&GitattributesPath)
+			.with_context(|| format!("Failed to create .gitattributes file at {:?}", GitattributesPath))?;
+
+		writeln!(File, "{}", GITATTRIBUTES_HEADER)?;
+
+		for Rule in GITATTRIBUTES_RULES {
+			writeln!(File, "{}", Rule)?;
+		}
+	} else {
+		info!(".gitattributes file found. Verifying LFS rules...");
+
+		let Content = fs::read_to_string(&GitattributesPath)?;
+
+		let MissingRules:Vec<_> = GITATTRIBUTES_RULES.iter().filter(|rule| !Content.contains(*rule)).collect();
+
+		if !MissingRules.is_empty() {
+			info!("Adding {} missing LFS rules to .gitattributes.", MissingRules.len());
+
+			let mut File = fs::OpenOptions::new()
+				.append(true)
+				.open(&GitattributesPath)
+				.with_context(|| format!("Failed to open .gitattributes for appending at {:?}", GitattributesPath))?;
+
+			writeln!(File, "\n\n# --- Rules Automatically Added by Vendor Script ---")?;
+
+			for Rule in MissingRules {
+				writeln!(File, "{}", Rule)?;
+			}
+		} else {
+			info!(".gitattributes is already up to date.");
+		}
+	}
+
+	Ok(())
+}
 
 // --- Core Logic ---
 
@@ -397,7 +482,7 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 
 	let mut LockedCache = Cache.lock().unwrap();
 
-	LockedCache.Entries.insert(CacheKey, Task.FullVersion.clone());
+	LockedCache.Entry.insert(CacheKey, Task.FullVersion.clone());
 
 	info!(
 		"    v{} ({}) for '{}' is now up to date.",
@@ -443,6 +528,9 @@ pub async fn Fn() -> Result<()> {
 
 	// --- Setup ---
 	let BaseSidecarDirectory = GetBaseSidecarDirectory()?;
+
+	// Manage the .gitattributes file for Git LFS.
+	UpdateGitattributes(&BaseSidecarDirectory)?;
 
 	let CachePath = BaseSidecarDirectory.join("Cache.json");
 
@@ -493,7 +581,7 @@ pub async fn Fn() -> Result<()> {
 					// Check cache to see if we need to download/update.
 					let CacheKey = format!("{}/{}/{}", &Platform.TauriTargetTriple, SidecarName, MajorVersion);
 
-					let CachedVersion = Cache.lock().unwrap().Entries.get(&CacheKey).cloned();
+					let CachedVersion = Cache.lock().unwrap().Entry.get(&CacheKey).cloned();
 
 					if Some(FullVersion.clone()) == CachedVersion {
 						info!("    v{} ({}) is already up to date, skipping.", MajorVersion, FullVersion);
