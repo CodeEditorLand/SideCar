@@ -8,7 +8,7 @@
 // Key Features:
 //   - Asynchronous, Concurrent Downloads: Leverages Tokio to download multiple
 //     binaries in parallel, significantly speeding up the process.
-//   - Intelligent Caching: Maintains a `Download.cache` file to track
+//   - Intelligent Caching: Maintains a `Cache.json` file to track
 //     downloaded versions. It automatically detects if a newer patch version is
 //     available for a requested major version and updates the binary.
 //   - Extensible Design: Easily configured to support new sidecars, versions,
@@ -89,7 +89,7 @@ struct DownloadTask {
 	TauriTargetTriple:String,
 }
 
-/// Represents the structure of the `Download.cache` file.
+/// Represents the structure of the `Cache.json` file.
 /// It uses a HashMap to map a unique key (representing a specific
 /// sidecar/version/platform) to the full version string that was last
 /// downloaded.
@@ -102,7 +102,7 @@ struct DownloadCache {
 }
 
 impl DownloadCache {
-	/// Loads the cache from the `Download.cache` file in the base sidecar
+	/// Loads the cache from the `Cache.json` file in the base sidecar
 	/// directory. If the file doesn't exist, it returns a new, empty cache.
 	fn Load(CachePath:&Path) -> Self {
 		if !CachePath.exists() {
@@ -136,7 +136,7 @@ impl DownloadCache {
 		}
 	}
 
-	/// Saves the current state of the cache to the `Download.cache` file.
+	/// Saves the current state of the cache to the `Cache.json` file.
 	/// The JSON is pretty-printed for readability.
 	fn Save(&self, CachePath:&Path) -> Result<()> {
 		let File =
@@ -389,7 +389,7 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 			Task.TauriTargetTriple, Task.SidecarName, ArchiveName, Error
 		);
 
-		return Err(Error);
+		return Err(Error.into());
 	}
 	info!(
 		"      [{}/{}] Extracting core binaries and modules...",
@@ -403,7 +403,7 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 			Task.TauriTargetTriple, Task.SidecarName, ArchiveName, Error
 		);
 
-		return Err(Error);
+		return Err(Error.into());
 	}
 
 	let ExtractedPath = TempDirectory.path().join(&Task.ExtractedFolderName);
@@ -424,18 +424,24 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 		fs::remove_dir_all(&Task.DestinationDirectory)?;
 	}
 
-	fs::create_dir_all(&Task.DestinationDirectory)?;
+	// Create the final parent directory, but not the last component which is the
+	// destination for the move.
+	if let Some(Parent) = Task.DestinationDirectory.parent() {
+		fs::create_dir_all(Parent)?;
+	}
 
 	info!("      Installing to: {:?}", Task.DestinationDirectory);
 
-	// Move the *contents* of the extracted folder to the destination.
-	for Entry in fs::read_dir(ExtractedPath)? {
-		let Entry = Entry?;
-
-		let DestinationPath = Task.DestinationDirectory.join(Entry.file_name());
-
-		fs::rename(Entry.path(), DestinationPath)?;
-	}
+	// This replaces the `fs::rename` loop which fails on Windows when the temp
+	// directory and destination directory are on different drives.
+	let mut Options = FsExtraCopyOptions::new();
+	Options.content_only = true;
+	FsExtraDir::move_dir(&ExtractedPath, &Task.DestinationDirectory, &Options).with_context(|| {
+		format!(
+			"Failed to move contents from {:?} to {:?}",
+			ExtractedPath, Task.DestinationDirectory
+		)
+	})?;
 
 	// Update the cache with the new version.
 	let CacheKey = format!("{}/{}/{}", Task.TauriTargetTriple, Task.SidecarName, Task.MajorVersion);
@@ -489,7 +495,7 @@ pub async fn Fn() -> Result<()> {
 	// --- Setup ---
 	let BaseSidecarDirectory = GetBaseSidecarDirectory()?;
 
-	let CachePath = BaseSidecarDirectory.join("Download.cache");
+	let CachePath = BaseSidecarDirectory.join("Cache.json");
 
 	fs::create_dir_all(&BaseSidecarDirectory).context("Failed to create base sidecar directory.")?;
 
@@ -672,6 +678,7 @@ use std::{
 
 use anyhow::{Context, Result, anyhow};
 use colored::*;
+use fs_extra::{dir as FsExtraDir, dir::CopyOptions as FsExtraCopyOptions};
 use futures::stream::{self, StreamExt};
 use log::{LevelFilter, error, info, warn};
 use reqwest::Client;
