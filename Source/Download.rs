@@ -33,6 +33,7 @@
 struct PlatformTarget {
 	/// The identifier used in the download URL (e.g., "win-x64",
 	///
+	///
 	/// "linux-arm64").
 	DownloadIdentifier:String,
 
@@ -40,6 +41,7 @@ struct PlatformTarget {
 	ArchiveExtension:String,
 
 	/// The official Tauri target triple for this platform (e.g.,
+	///
 	///
 	/// "x86_64-pc-windows-msvc").
 	TauriTargetTriple:String,
@@ -399,6 +401,7 @@ fn ExtractArchive(ArchiveType:&ArchiveType, ArchivePath:&Path, ExtractionDirecto
 
 			Archive.extract(ExtractionDirectory)?;
 		},
+
 		ArchiveType::TarGz => {
 			let File = File::open(ArchivePath)?;
 
@@ -418,11 +421,11 @@ fn ExtractArchive(ArchiveType:&ArchiveType, ArchivePath:&Path, ExtractionDirecto
 async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<DownloadCache>>) -> Result<()> {
 	// Create the temporary directory inside the designated "Temporary" subfolder.
 	let TempDirectory = Builder::new()
-		.prefix("sidecar-download-")
+		.prefix("SideCar-Download-")
 		.tempdir_in(&Task.TempParentDirectory)
 		.context("Failed to create temporary directory.")?;
 
-	let ArchiveName = Task.DownloadURL.split('/').last().unwrap_or("download.tmp");
+	let ArchiveName = Task.DownloadURL.split('/').last().unwrap_or("Download.tmp");
 
 	let ArchivePath = TempDirectory.path().join(ArchiveName);
 
@@ -619,13 +622,21 @@ pub async fn Fn() -> Result<()> {
 
 					let Task = DownloadTask {
 						SidecarName:SidecarName.clone(),
+
 						MajorVersion:MajorVersion.clone(),
+
 						FullVersion,
+
 						DownloadURL,
+
 						TempParentDirectory:TempDownloadsDirectory.clone(),
+
 						DestinationDirectory,
+
 						ArchiveType:if ArchiveExtension == "zip" { ArchiveType::Zip } else { ArchiveType::TarGz },
+
 						ExtractedFolderName,
+
 						TauriTargetTriple:Platform.TauriTargetTriple.clone(),
 					};
 
