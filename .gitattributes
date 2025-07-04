@@ -27,3 +27,12 @@
 **/NODE/**/lib/node_modules/npm/** filter=lfs diff=lfs merge=lfs -text
 **/NODE/**/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text
 **/NODE/**/lib/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text
+
+
+# --- Rules Automatically Added by Vendor Script ---
+Target/debug/*.exe filter=lfs diff=lfs merge=lfs -text
+Target/release/*.exe filter=lfs diff=lfs merge=lfs -text
+Target/debug/SideCar filter=lfs diff=lfs merge=lfs -text
+Target/release/SideCar filter=lfs diff=lfs merge=lfs -text
+Target/debug/Download filter=lfs diff=lfs merge=lfs -text
+Target/release/Download filter=lfs diff=lfs merge=lfs -text
