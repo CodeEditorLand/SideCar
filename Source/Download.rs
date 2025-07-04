@@ -32,8 +32,6 @@
 #[derive(Clone, Debug)]
 struct PlatformTarget {
 	/// The identifier used in the download URL (e.g., "win-x64",
-	///
-	///
 	/// "linux-arm64").
 	DownloadIdentifier:String,
 
@@ -41,8 +39,6 @@ struct PlatformTarget {
 	ArchiveExtension:String,
 
 	/// The official Tauri target triple for this platform (e.g.,
-	///
-	///
 	/// "x86_64-pc-windows-msvc").
 	TauriTargetTriple:String,
 }
@@ -275,25 +271,32 @@ fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
 # --- Rule Definitions ---"#;
 
 	const GITATTRIBUTES_RULES:&[&str] = &[
-		// Main executables
 		"**/NODE/**/bin/node filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/node.exe filter=lfs diff=lfs merge=lfs -text",
-		// Wrapper scripts (Unix)
 		"**/NODE/**/bin/npm filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/bin/npx filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/bin/corepack filter=lfs diff=lfs merge=lfs -text",
-		// Wrapper scripts (Windows)
 		"**/NODE/**/npm filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/npm.cmd filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/npx filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/npx.cmd filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/corepack filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/corepack.cmd filter=lfs diff=lfs merge=lfs -text",
-		// Module directories
 		"**/NODE/**/node_modules/npm/** filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/lib/node_modules/npm/** filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/lib/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text",
+		"",
+		"# --- Rules for the SideCar build artifacts ---",
+		"",
+		"Target/debug/*.exe filter=lfs diff=lfs merge=lfs -text",
+		"Target/release/*.exe filter=lfs diff=lfs merge=lfs -text",
+		"",
+		"Target/debug/SideCar filter=lfs diff=lfs merge=lfs -text",
+		"Target/release/SideCar filter=lfs diff=lfs merge=lfs -text",
+		"",
+		"Target/debug/Download filter=lfs diff=lfs merge=lfs -text",
+		"Target/release/Download filter=lfs diff=lfs merge=lfs -text",
 	];
 
 	let GitattributesPath = BaseDirectory.join(".gitattributes");
@@ -307,6 +310,7 @@ fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
 		writeln!(File, "{}", GITATTRIBUTES_HEADER)?;
 
 		for Rule in GITATTRIBUTES_RULES {
+			// This will write a blank line for any empty strings in the array
 			writeln!(File, "{}", Rule)?;
 		}
 	} else {
@@ -314,7 +318,12 @@ fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
 
 		let Content = fs::read_to_string(&GitattributesPath)?;
 
-		let MissingRules:Vec<_> = GITATTRIBUTES_RULES.iter().filter(|rule| !Content.contains(*rule)).collect();
+		let MissingRules:Vec<_> = GITATTRIBUTES_RULES
+			.iter()
+			// Filter out blank lines and comments from the check
+			.filter(|rule| !rule.is_empty() && !rule.starts_with('#'))
+			.filter(|rule| !Content.contains(*rule))
+			.collect();
 
 		if !MissingRules.is_empty() {
 			info!("Adding {} missing LFS rules to .gitattributes.", MissingRules.len());
