@@ -271,6 +271,7 @@ fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
 # --- Rule Definitions ---"#;
 
 	const GITATTRIBUTES_RULES:&[&str] = &[
+<<<<<<< HEAD
 		"**/NODE/**/bin/node filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/node.exe filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/bin/npm filter=lfs diff=lfs merge=lfs -text",
@@ -286,6 +287,19 @@ fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
 		"**/NODE/**/lib/node_modules/npm/** filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text",
 		"**/NODE/**/lib/node_modules/corepack/** filter=lfs diff=lfs merge=lfs -text",
+=======
+		// "**/NODE/**/bin/node filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/node.exe filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/bin/npm filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/bin/npx filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/bin/corepack filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/npm filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/npm.cmd filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/npx filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/npx.cmd filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/corepack filter=lfs diff=lfs merge=lfs -text",
+		// "**/NODE/**/corepack.cmd filter=lfs diff=lfs merge=lfs -text",
+>>>>>>> 4af354cfa1b0ac027813129a95b467f9f01b8657
 		"",
 		"# --- Rules for the SideCar build artifacts ---",
 		"",
