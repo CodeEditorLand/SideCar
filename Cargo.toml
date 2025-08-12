@@ -1,0 +1,48 @@
+[[bin]]
+name = "Download"
+path = "Source/Download.rs"
+
+[[bin]]
+name = "SideCar"
+path = "Source/Library.rs"
+
+[build-dependencies]
+serde = { workspace = true, features = ["derive"] }
+toml = { workspace = true }
+
+[dependencies]
+tokio = { workspace = true, features = ["full"] }
+reqwest = { workspace = true, features = ["json"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+futures = { workspace = true }
+tempfile = { workspace = true }
+zip = { workspace = true }
+tar = { workspace = true }
+flate2 = { workspace = true }
+colored = { workspace = true }
+anyhow = { workspace = true }
+num_cpus = { workspace = true }
+log = { workspace = true }
+env_logger = { workspace = true }
+fs_extra = { workspace = true }
+
+[lib]
+path = "Source/Library.rs"
+
+[package]
+authors = ["Source 🖋️ Open 👐🏻 <Source/Open@Editor.Land>"]
+autobenches = false
+autobins = false
+autoexamples = false
+autotests = false
+default-run = "SideCar"
+description = "SideCar 🚃"
+documentation = "https://Documentation.SideCar.Editor.Land"
+edition = "2024"
+homepage = "https://SideCar.Editor.Land"
+license-file = "LICENSE"
+name = "SideCar"
+publish = false
+repository = "https://github.com/CodeEditorLand/SideCar"
+version = "0.0.1"
