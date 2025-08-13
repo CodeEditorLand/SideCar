@@ -40,3 +40,27 @@
 !/Target/x86_64-pc-windows-msvc/bundle/appimage/*.AppImage
 
 !/Target/x86_64-pc-windows-msvc/*.exe
+
+Temporary/**
+!Temporary/.gitkeep
+
+/aarch64-apple-darwin/NODE/**/*
+!/aarch64-apple-darwin/.gitkeep
+!/aarch64-apple-darwin/NODE/.gitkeep
+
+/aarch64-unknown-linux-gnu/NODE/**
+!/aarch64-unknown-linux-gnu/.gitkeep
+!/aarch64-unknown-linux-gnu/NODE/.gitkeep
+
+/x86_64-apple-darwin/NODE/**/*
+!/x86_64-apple-darwin/.gitkeep
+!/x86_64-apple-darwin/NODE/.gitkeep
+
+/x86_64-pc-windows-msvc/NODE/**
+!/x86_64-pc-windows-msvc/.gitkeep
+!/x86_64-pc-windows-msvc/NODE/.gitkeep
+
+/x86_64-unknown-linux-gnu/NODE/**
+!/x86_64-unknown-linux-gnu/.gitkeep
+!/x86_64-unknown-linux-gnu/NODE/.gitkeep
+
