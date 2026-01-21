@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["Download",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html\" title=\"trait core::marker::Freeze\">Freeze</a> for <a class=\"enum\" href=\"Download/enum.ArchiveType.html\" title=\"enum Download::ArchiveType\">ArchiveType</a>",0,1,["Download::ArchiveType"]],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html\" title=\"trait core::marker::Freeze\">Freeze</a> for <a class=\"struct\" href=\"Download/struct.DownloadCache.html\" title=\"struct Download::DownloadCache\">DownloadCache</a>",0,1,["Download::DownloadCache"]],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html\" title=\"trait core::marker::Freeze\">Freeze</a> for <a class=\"struct\" href=\"Download/struct.DownloadTask.html\" title=\"struct Download::DownloadTask\">DownloadTask</a>",0,1,["Download::DownloadTask"]],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html\" title=\"trait core::marker::Freeze\">Freeze</a> for <a class=\"struct\" href=\"Download/struct.NodeVersionInfo.html\" title=\"struct Download::NodeVersionInfo\">NodeVersionInfo</a>",0,1,["Download::NodeVersionInfo"]],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html\" title=\"trait core::marker::Freeze\">Freeze</a> for <a class=\"struct\" href=\"Download/struct.PlatformTarget.html\" title=\"struct Download::PlatformTarget\">PlatformTarget</a>",0,1,["Download::PlatformTarget"]]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[1548]}

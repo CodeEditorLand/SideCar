@@ -64,3 +64,8 @@ Temporary/**
 !/x86_64-unknown-linux-gnu/.gitkeep
 !/x86_64-unknown-linux-gnu/NODE/.gitkeep
 
+Documentation/Rust/debug
+Documentation/Rust/release
+Documentation/Rust/.rustc_info.json
+Documentation/Rust/.rustdoc_fingerprint.json
+Documentation/Rust/CACHEDIR.TAG
