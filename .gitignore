@@ -40,8 +40,5 @@
 !/Target/x86_64-pc-windows-msvc/bundle/appimage/*.AppImage
 
 !/Target/x86_64-pc-windows-msvc/*.exe
-<<<<<<< HEAD
-=======
 
 !**/NODE/**/*
->>>>>>> 4af354cfa1b0ac027813129a95b467f9f01b8657
