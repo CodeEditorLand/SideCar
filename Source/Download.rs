@@ -141,7 +141,16 @@ impl DownloadCache {
 
 	/// Saves the current state of the cache to the `Cache.json` file.
 	/// The JSON is pretty-printed with tabs for indentation.
+	/// Entries are sorted alphabetically by key for consistency.
 	fn Save(&self, CachePath:&Path) -> Result<()> {
+		// Create a BTreeMap to sort entries alphabetically by key
+		let SortedEntries:BTreeMap<_, _> = self.Entries.iter().collect();
+
+		// Create a temporary struct to hold the sorted entries for serialization
+		let CacheToSerialize = serde_json::json!({
+			"Entries": SortedEntries
+		});
+
 		// Create an in-memory buffer to write the serialized JSON to.
 		let mut Buffer = Vec::new();
 
@@ -151,8 +160,8 @@ impl DownloadCache {
 		// Create a serializer with our custom formatter.
 		let mut Serializer = serde_json::Serializer::with_formatter(&mut Buffer, Formatter);
 
-		// Serialize the `DownloadCache` data into the buffer.
-		self.serialize(&mut Serializer)?;
+		// Serialize the sorted cache data into the buffer.
+		CacheToSerialize.serialize(&mut Serializer)?;
 
 		// Write the buffer's contents to the actual file on disk.
 		fs::write(CachePath, &Buffer)
@@ -271,17 +280,17 @@ fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
 # --- Rule Definitions ---"#;
 
 	const GITATTRIBUTES_RULES:&[&str] = &[
-		// "**/NODE/**/bin/node filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/node.exe filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/bin/npm filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/bin/npx filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/bin/corepack filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/npm filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/npm.cmd filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/npx filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/npx.cmd filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/corepack filter=lfs diff=lfs merge=lfs -text",
-		// "**/NODE/**/corepack.cmd filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/bin/node filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/node.exe filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/bin/npm filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/bin/npx filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/bin/corepack filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/npm filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/npm.cmd filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/npx filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/npx.cmd filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/corepack filter=lfs diff=lfs merge=lfs -text",
+		"**/NODE/**/corepack.cmd filter=lfs diff=lfs merge=lfs -text",
 		"",
 		"# --- Rules for the SideCar build artifacts ---",
 		"",
@@ -724,7 +733,7 @@ fn main() {
 
 // --- Imports ---
 use std::{
-	collections::HashMap,
+	collections::{BTreeMap, HashMap},
 	env,
 	fs::{self, File},
 	io::Write,
