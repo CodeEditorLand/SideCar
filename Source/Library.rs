@@ -1,8 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-#![allow(non_snake_case, non_upper_case_globals)]
+#![allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
-#[allow(dead_code)]
 /// Main executable function.
+#[allow(dead_code)]
 fn main() {
 	if let Err(Error) = Download::Fn() {
 		error!("The application encountered a fatal error: {}", Error);
