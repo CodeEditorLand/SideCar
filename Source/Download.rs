@@ -145,6 +145,7 @@ impl DownloadCache {
 
 		// Create a temporary struct to hold the sorted entries for serialization
 		let CacheToSerialize = serde_json::json!({
+
 			"Entries": SortedEntries
 		});
 
@@ -172,26 +173,88 @@ impl DownloadCache {
 
 /// Returns the root directory where all sidecars will be stored.
 /// This is determined dynamically by navigating up from the executable's
-/// location. It assumes the executable is located in a path like
-/// `.../SideCar/Target/release/`, and it will resolve the base path to
-/// `.../SideCar/`.
+/// location and detecting the SideCar project root. It handles both:
+/// - Standalone builds: `.../SideCar/Target/release/`
+/// - Workspace builds: `.../workspace/Target/release/SideCar` (where the
+///   workspace root contains multiple crates including Element/SideCar)
 fn GetBaseSidecarDirectory() -> Result<PathBuf> {
 	// Get the full path to the currently running executable.
 	let CurrentExePath = env::current_exe().context("Failed to get the path of the current executable.")?;
 
-	// The first .parent() gets the directory containing the exe (e.g., `release`).
-	// We then navigate up two more levels to get to the intended `SideCar`
-	// directory.
-	let BaseDirectory = CurrentExePath
+	// Start from the directory containing the executable and walk up the tree.
+	let mut CurrentDir = CurrentExePath
 		.parent()
-		.and_then(|p| p.parent())
-		.and_then(|p| p.parent())
-		.context(
-			"Could not determine the base sidecar directory. Expected to be run from a subdirectory like \
-			 'Target/release' within the sidecar project.",
-		)?;
+		.context("Executable must be in a directory (not the root).")?;
 
-	Ok(BaseDirectory.to_path_buf())
+	loop {
+		// Check A: Does Source/Library.rs exist in current directory? → return current directory
+		let LibraryRsPath = CurrentDir.join("Source").join("Library.rs");
+
+		if LibraryRsPath.exists() {
+			return Ok(CurrentDir.to_path_buf());
+		}
+
+		// Check B: Does a Cargo.toml exist in current directory with package.name = "SideCar"? → return current directory
+		let CargoTomlPath = CurrentDir.join("Cargo.toml");
+
+		if CargoTomlPath.exists() {
+			if let Ok(CargoContents) = fs::read_to_string(&CargoTomlPath) {
+				if let Ok(Toml) = toml::from_str::<toml::Value>(&CargoContents) {
+					if let Some(Package) = Toml.get("package") {
+						if let Some(PackageName) = Package.get("name").and_then(|v| v.as_str()) {
+							if PackageName == "SideCar" {
+								// Verify that Source subdirectory exists as additional confirmation.
+								let SourceDir = CurrentDir.join("Source");
+
+								if SourceDir.exists() {
+									return Ok(CurrentDir.to_path_buf());
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Check C: Does Element/SideCar/Cargo.toml exist relative to current directory
+		// AND does it have package.name = "SideCar"? → return Element/SideCar subdirectory path
+		let SubdirCargoTomlPath = CurrentDir.join("Element").join("SideCar").join("Cargo.toml");
+
+		if SubdirCargoTomlPath.exists() {
+			if let Ok(CargoContents) = fs::read_to_string(&SubdirCargoTomlPath) {
+				if let Ok(Toml) = toml::from_str::<toml::Value>(&CargoContents) {
+					if let Some(Package) = Toml.get("package") {
+						if let Some(PackageName) = Package.get("name").and_then(|v| v.as_str()) {
+							if PackageName == "SideCar" {
+								// Verify that the Element/SideCar/Source subdirectory exists.
+								let SourceDir = CurrentDir.join("Element").join("SideCar").join("Source");
+
+								if SourceDir.exists() {
+									// Return the full path to the Element/SideCar subdirectory.
+									return Ok(CurrentDir.join("Element").join("SideCar"));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Move up one level.
+		let NextDir = match CurrentDir.parent() {
+			Some(Parent) => Parent,
+
+			None => break, // Reached filesystem root without finding the project
+		};
+
+		CurrentDir = NextDir;
+	}
+
+	Err(anyhow!(
+		"Could not determine the SideCar base directory. The executable should be built from within the SideCar \
+		 crate or from the workspace containing Element/SideCar. Searched up from: {}",
+		CurrentExePath.display()
+	))
 }
 
 /// Defines the matrix of platforms to target. Each entry specifies how to
@@ -269,6 +332,7 @@ fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
 # main repository history small and fast.
 #
 # The `-text` attribute is used to prevent Git from normalizing line endings,
+
 # which is critical for binary files and scripts.
 #
 # This file is automatically managed by the sidecar vendor script.
@@ -745,3 +809,4 @@ use log::{LevelFilter, error, info, warn};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use tempfile::Builder;
+use toml;
