@@ -21,7 +21,6 @@
 //     identical to the original script (`Architecture/SidecarName/Version`).
 //
 // ==============================================================================
-
 // Allow non_snake_case to meet the user's naming convention requirement.
 #![allow(non_snake_case, non_upper_case_globals)]
 
