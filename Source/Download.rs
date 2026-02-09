@@ -5,8 +5,8 @@
 //! Universal Sidecar Vendor - Rust Edition
 //!
 //! This program automates downloading and organizing full distributions of
-//! various sidecar runtimes (like Node.js) for a Tauri application. It is a Rust
-//! rewrite of the original shell script, enhanced with modern features.
+//! various sidecar runtimes (like Node.js) for a Tauri application. It is a
+//! Rust rewrite of the original shell script, enhanced with modern features.
 //!
 //! Key Features:
 //!   - Asynchronous, Concurrent Downloads: Leverages Tokio to download multiple
@@ -14,8 +14,8 @@
 //!   - Intelligent Caching: Maintains a `Cache.json` file to track downloaded
 //!     versions. It automatically detects if a newer patch version is available
 //!     for a requested major version and updates the binary.
-//!   - Git LFS Management: Automatically creates or updates the `.gitattributes`
-//!     file to ensure large binaries are tracked by Git LFS.
+//!   - Git LFS Management: Automatically creates or updates the
+//!     `.gitattributes` file to ensure large binaries are tracked by Git LFS.
 //!   - Extensible Design: Easily configured to support new sidecars, versions,
 //!     and platforms.
 //!   - Robust Error Handling: Uses `anyhow` for clear and concise error
@@ -190,14 +190,16 @@ fn GetBaseSidecarDirectory() -> Result<PathBuf> {
 		.context("Executable must be in a directory (not the root).")?;
 
 	loop {
-		// Check A: Does Source/Library.rs exist in current directory? → return current directory
+		// Check A: Does Source/Library.rs exist in current directory? → return current
+		// directory
 		let LibraryRsPath = CurrentDir.join("Source").join("Library.rs");
 
 		if LibraryRsPath.exists() {
 			return Ok(CurrentDir.to_path_buf());
 		}
 
-		// Check B: Does a Cargo.toml exist in current directory with package.name = "SideCar"? → return current directory
+		// Check B: Does a Cargo.toml exist in current directory with package.name =
+		// "SideCar"? → return current directory
 		let CargoTomlPath = CurrentDir.join("Cargo.toml");
 
 		if CargoTomlPath.exists() {
@@ -220,7 +222,8 @@ fn GetBaseSidecarDirectory() -> Result<PathBuf> {
 		}
 
 		// Check C: Does Element/SideCar/Cargo.toml exist relative to current directory
-		// AND does it have package.name = "SideCar"? → return Element/SideCar subdirectory path
+		// AND does it have package.name = "SideCar"? → return Element/SideCar
+		// subdirectory path
 		let SubdirCargoTomlPath = CurrentDir.join("Element").join("SideCar").join("Cargo.toml");
 
 		if SubdirCargoTomlPath.exists() {
@@ -254,8 +257,8 @@ fn GetBaseSidecarDirectory() -> Result<PathBuf> {
 	}
 
 	Err(anyhow!(
-		"Could not determine the SideCar base directory. The executable should be built from within the SideCar \
-		 crate or from the workspace containing Element/SideCar. Searched up from: {}",
+		"Could not determine the SideCar base directory. The executable should be built from within the SideCar crate \
+		 or from the workspace containing Element/SideCar. Searched up from: {}",
 		CurrentExePath.display()
 	))
 }
