@@ -1,26 +1,29 @@
-// ==============================================================================
-// Universal Sidecar Vendor - Rust Edition
-//
-// This program automates downloading and organizing full distributions of
-// various sidecar runtimes (like Node.js) for a Tauri application. It is a Rust
-// rewrite of the original shell script, enhanced with modern features.
-//
-// Key Features:
-//   - Asynchronous, Concurrent Downloads: Leverages Tokio to download multiple
-//     binaries in parallel, significantly speeding up the process.
-//   - Intelligent Caching: Maintains a `Cache.json` file to track downloaded
-//     versions. It automatically detects if a newer patch version is available
-//     for a requested major version and updates the binary.
-//   - Git LFS Management: Automatically creates or updates the `.gitattributes`
-//     file to ensure large binaries are tracked by Git LFS.
-//   - Extensible Design: Easily configured to support new sidecars, versions,
-//     and platforms.
-//   - Robust Error Handling: Uses `anyhow` for clear and concise error
-//     reporting.
-//   - Preserved File Structure: The final output directory structure remains
-//     identical to the original script (`Architecture/SidecarName/Version`).
-//
-// ==============================================================================
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
+
+//! ==============================================================================
+//! Universal Sidecar Vendor - Rust Edition
+//!
+//! This program automates downloading and organizing full distributions of
+//! various sidecar runtimes (like Node.js) for a Tauri application. It is a Rust
+//! rewrite of the original shell script, enhanced with modern features.
+//!
+//! Key Features:
+//!   - Asynchronous, Concurrent Downloads: Leverages Tokio to download multiple
+//!     binaries in parallel, significantly speeding up the process.
+//!   - Intelligent Caching: Maintains a `Cache.json` file to track downloaded
+//!     versions. It automatically detects if a newer patch version is available
+//!     for a requested major version and updates the binary.
+//!   - Git LFS Management: Automatically creates or updates the `.gitattributes`
+//!     file to ensure large binaries are tracked by Git LFS.
+//!   - Extensible Design: Easily configured to support new sidecars, versions,
+//!     and platforms.
+//!   - Robust Error Handling: Uses `anyhow` for clear and concise error
+//!     reporting.
+//!   - Preserved File Structure: The final output directory structure remains
+//!     identical to the original script (`Architecture/SidecarName/Version`).
+//!
+//! ==============================================================================
 
 // --- Type Definitions and Structs ---
 
