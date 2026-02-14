@@ -2,30 +2,30 @@
 
 Select a Node.js version below to view the changelog history:
 
-- [Node.js 23](doc/changelogs/CHANGELOG_V23.md) **Current**
-- [Node.js 22](doc/changelogs/CHANGELOG_V22.md) **Current**
-- [Node.js 21](doc/changelogs/CHANGELOG_V21.md) End-of-Life
-- [Node.js 20](doc/changelogs/CHANGELOG_V20.md) **Long Term Support**
-- [Node.js 19](doc/changelogs/CHANGELOG_V19.md) End-of-Life
-- [Node.js 18](doc/changelogs/CHANGELOG_V18.md) **Long Term Support**
-- [Node.js 17](doc/changelogs/CHANGELOG_V17.md) End-of-Life
-- [Node.js 16](doc/changelogs/CHANGELOG_V16.md) End-of-Life
-- [Node.js 15](doc/changelogs/CHANGELOG_V15.md) End-of-Life
-- [Node.js 14](doc/changelogs/CHANGELOG_V14.md) End-of-Life
-- [Node.js 13](doc/changelogs/CHANGELOG_V13.md) End-of-Life
-- [Node.js 12](doc/changelogs/CHANGELOG_V12.md) End-of-Life
-- [Node.js 11](doc/changelogs/CHANGELOG_V11.md) End-of-Life
-- [Node.js 10](doc/changelogs/CHANGELOG_V10.md) End-of-Life
-- [Node.js 9](doc/changelogs/CHANGELOG_V9.md) End-of-Life
-- [Node.js 8](doc/changelogs/CHANGELOG_V8.md) End-of-Life
-- [Node.js 7](doc/changelogs/CHANGELOG_V7.md) End-of-Life
-- [Node.js 6](doc/changelogs/CHANGELOG_V6.md) End-of-Life
-- [Node.js 5](doc/changelogs/CHANGELOG_V5.md) End-of-Life
-- [Node.js 4](doc/changelogs/CHANGELOG_V4.md) End-of-Life
-- [io.js](doc/changelogs/CHANGELOG_IOJS.md) End-of-Life
-- [Node.js 0.12](doc/changelogs/CHANGELOG_V012.md) End-of-Life
-- [Node.js 0.10](doc/changelogs/CHANGELOG_V010.md) End-of-Life
-- [Archive](doc/changelogs/CHANGELOG_ARCHIVE.md)
+- [Node.js 23](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V23.md) **Current**
+- [Node.js 22](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V22.md) **Current**
+- [Node.js 21](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V21.md) End-of-Life
+- [Node.js 20](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V20.md) **Long Term Support**
+- [Node.js 19](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V19.md) End-of-Life
+- [Node.js 18](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V18.md) **Long Term Support**
+- [Node.js 17](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V17.md) End-of-Life
+- [Node.js 16](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V16.md) End-of-Life
+- [Node.js 15](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V15.md) End-of-Life
+- [Node.js 14](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V14.md) End-of-Life
+- [Node.js 13](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V13.md) End-of-Life
+- [Node.js 12](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V12.md) End-of-Life
+- [Node.js 11](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V11.md) End-of-Life
+- [Node.js 10](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V10.md) End-of-Life
+- [Node.js 9](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V9.md) End-of-Life
+- [Node.js 8](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V8.md) End-of-Life
+- [Node.js 7](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V7.md) End-of-Life
+- [Node.js 6](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V6.md) End-of-Life
+- [Node.js 5](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V5.md) End-of-Life
+- [Node.js 4](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V4.md) End-of-Life
+- [io.js](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_IOJS.md) End-of-Life
+- [Node.js 0.12](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V012.md) End-of-Life
+- [Node.js 0.10](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_V010.md) End-of-Life
+- [Archive](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-pc-windows-msvc/NODE/23/doc/changelogs/CHANGELOG_ARCHIVE.md)
 
 Please use the following table to find the changelog for a specific Node.js
 release.
