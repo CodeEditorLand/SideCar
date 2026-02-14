@@ -4,7 +4,7 @@ Node.js is an open-source, cross-platform, JavaScript runtime environment.
 
 For information on using Node.js, see the [Node.js website][].
 
-The Node.js project uses an [open governance model](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-unknown-linux-gnu/NODE/17/GOVERNANCE.md). The
+The Node.js project uses an [open governance model](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/17/GOVERNANCE.md). The
 [OpenJS Foundation][] provides support for the project.
 
 **This project has a [Code of Conduct][].**
@@ -31,7 +31,7 @@ The Node.js project uses an [open governance model](https://github.com/CodeEdito
 ## Support
 
 Looking for help? Check out the
-[instructions for getting support](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-unknown-linux-gnu/NODE/17/.github/SUPPORT.md).
+[instructions for getting support](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/17/.github/SUPPORT.md).
 
 ## Release types
 
@@ -126,13 +126,13 @@ signature.
 
 ## Building Node.js
 
-See [BUILDING.md](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-unknown-linux-gnu/NODE/17/BUILDING.md) for instructions on how to build Node.js from
+See [BUILDING.md](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/17/BUILDING.md) for instructions on how to build Node.js from
 source and a list of supported platforms.
 
 ## Security
 
 For information on reporting security vulnerabilities in Node.js, see
-[SECURITY.md](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-unknown-linux-gnu/NODE/17/SECURITY.md).
+[SECURITY.md](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/17/SECURITY.md).
 
 ## Contributing to Node.js
 
@@ -144,7 +144,7 @@ For information on reporting security vulnerabilities in Node.js, see
 ## Current project team members
 
 For information about the governance of the Node.js project, see
-[GOVERNANCE.md](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-unknown-linux-gnu/NODE/17/GOVERNANCE.md).
+[GOVERNANCE.md](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/17/GOVERNANCE.md).
 
 <!-- node-core-utils and find-inactive-tsc.mjs depend on the format of the TSC
      list. If the format changes, those utilities need to be tested and
@@ -611,7 +611,7 @@ For information about the governance of the Node.js project, see
 <!--lint enable prohibited-strings-->
 
 Collaborators follow the
-[Collaborator Guide](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-unknown-linux-gnu/NODE/17/doc/contributing/collaborator-guide.md) in maintaining
+[Collaborator Guide](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/17/doc/contributing/collaborator-guide.md) in maintaining
 the Node.js project.
 
 ### Triagers
@@ -713,7 +713,7 @@ rotation is made by companies in order to ensure individuals who act as security
 stewards have the support and recognition from their employer to be able to
 prioritize security releases. Security release stewards manage security releases
 on a rotation basis as outlined in the
-[security release process](https://github.com/CodeEditorLand/SideCar/tree/main/x86_64-unknown-linux-gnu/NODE/17/doc/contributing/security-release-process.md).
+[security release process](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/17/doc/contributing/security-release-process.md).
 
 - Datadog
     - [bengl](https://github.com/bengl) - **Bryan English**

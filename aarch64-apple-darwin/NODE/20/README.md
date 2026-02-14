@@ -4,12 +4,12 @@ Node.js is an open-source, cross-platform JavaScript runtime environment.
 
 For information on using Node.js, see the [Node.js website][].
 
-The Node.js project uses an [open governance model](https://github.com/CodeEditorLand/SideCar/tree/main/aarch64-apple-darwin/NODE/20/GOVERNANCE.md). The
+The Node.js project uses an [open governance model](https://github.com/CodeEditorLand/SideCar/tree/Current/aarch64-apple-darwin/NODE/20/GOVERNANCE.md). The
 [OpenJS Foundation][] provides support for the project.
 
 Contributors are expected to act in a collaborative manner to move the project
 forward. We encourage the constructive exchange of contrary opinions and
-compromise. The [TSC](https://github.com/CodeEditorLand/SideCar/tree/main/aarch64-apple-darwin/NODE/20/GOVERNANCE.md#technical-steering-committee) reserves the
+compromise. The [TSC](https://github.com/CodeEditorLand/SideCar/tree/Current/aarch64-apple-darwin/NODE/20/GOVERNANCE.md#technical-steering-committee) reserves the
 right to limit or block contributors who repeatedly act in ways that discourage,
 exhaust, or otherwise negatively affect other participants.
 
@@ -37,7 +37,7 @@ exhaust, or otherwise negatively affect other participants.
 ## Support
 
 Looking for help? Check out the
-[instructions for getting support](https://github.com/CodeEditorLand/SideCar/tree/main/aarch64-apple-darwin/NODE/20/.github/SUPPORT.md).
+[instructions for getting support](https://github.com/CodeEditorLand/SideCar/tree/Current/aarch64-apple-darwin/NODE/20/.github/SUPPORT.md).
 
 ## Release types
 
@@ -128,13 +128,13 @@ signature.
 
 ## Building Node.js
 
-See [BUILDING.md](https://github.com/CodeEditorLand/SideCar/tree/main/aarch64-apple-darwin/NODE/20/BUILDING.md) for instructions on how to build Node.js from
+See [BUILDING.md](https://github.com/CodeEditorLand/SideCar/tree/Current/aarch64-apple-darwin/NODE/20/BUILDING.md) for instructions on how to build Node.js from
 source and a list of supported platforms.
 
 ## Security
 
 For information on reporting security vulnerabilities in Node.js, see
-[SECURITY.md](https://github.com/CodeEditorLand/SideCar/tree/main/aarch64-apple-darwin/NODE/20/SECURITY.md).
+[SECURITY.md](https://github.com/CodeEditorLand/SideCar/tree/Current/aarch64-apple-darwin/NODE/20/SECURITY.md).
 
 ## Contributing to Node.js
 
@@ -146,7 +146,7 @@ For information on reporting security vulnerabilities in Node.js, see
 ## Current project team members
 
 For information about the governance of the Node.js project, see
-[GOVERNANCE.md](https://github.com/CodeEditorLand/SideCar/tree/main/aarch64-apple-darwin/NODE/20/GOVERNANCE.md).
+[GOVERNANCE.md](https://github.com/CodeEditorLand/SideCar/tree/Current/aarch64-apple-darwin/NODE/20/GOVERNANCE.md).
 
 <!-- node-core-utils and find-inactive-tsc.mjs depend on the format of the TSC
      list. If the format changes, those utilities need to be tested and
@@ -707,7 +707,7 @@ For information about the governance of the Node.js project, see
 <!--lint enable prohibited-strings-->
 
 Collaborators follow the
-[Collaborator Guide](https://github.com/CodeEditorLand/SideCar/tree/main/aarch64-apple-darwin/NODE/20/doc/contributing/collaborator-guide.md) in maintaining
+[Collaborator Guide](https://github.com/CodeEditorLand/SideCar/tree/Current/aarch64-apple-darwin/NODE/20/doc/contributing/collaborator-guide.md) in maintaining
 the Node.js project.
 
 ### Triagers
@@ -748,7 +748,7 @@ the Node.js project.
   <<mohammadkeyvanzade94@gmail.com>> (he/him)
 
 Triagers follow the
-[Triage Guide](https://github.com/CodeEditorLand/SideCar/tree/main/aarch64-apple-darwin/NODE/20/doc/contributing/issues.md#triaging-a-bug-report) when
+[Triage Guide](https://github.com/CodeEditorLand/SideCar/tree/Current/aarch64-apple-darwin/NODE/20/doc/contributing/issues.md#triaging-a-bug-report) when
 responding to new issues.
 
 ### Release keys
@@ -836,7 +836,7 @@ rotation is made by companies in order to ensure individuals who act as security
 stewards have the support and recognition from their employer to be able to
 prioritize security releases. Security release stewards manage security releases
 on a rotation basis as outlined in the
-[security release process](https://github.com/CodeEditorLand/SideCar/tree/main/aarch64-apple-darwin/NODE/20/doc/contributing/security-release-process.md).
+[security release process](https://github.com/CodeEditorLand/SideCar/tree/Current/aarch64-apple-darwin/NODE/20/doc/contributing/security-release-process.md).
 
 - [Datadog](https://www.datadoghq.com/)
     - [bengl](https://github.com/bengl) - **Bryan English**
