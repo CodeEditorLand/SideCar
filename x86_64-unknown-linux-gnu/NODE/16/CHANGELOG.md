@@ -5456,7 +5456,7 @@ import assertions are now required to import JSON modules (still behind the
 `--experimental-json-modules` CLI flag):
 
 ```mjs
-import info from "./package.json" assert { type: "json" };
+import info from "./package.json" with { type: "json" };
 ```
 
 Or use dynamic import:

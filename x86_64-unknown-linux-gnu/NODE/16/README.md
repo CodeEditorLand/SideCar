@@ -4,8 +4,9 @@ Node.js is an open-source, cross-platform JavaScript runtime environment.
 
 For information on using Node.js, see the [Node.js website][].
 
-The Node.js project uses an [open governance model](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/16/GOVERNANCE.md). The
-[OpenJS Foundation][] provides support for the project.
+The Node.js project uses an
+[open governance model](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/16/GOVERNANCE.md).
+The [OpenJS Foundation][] provides support for the project.
 
 **This project has a [Code of Conduct][].**
 
@@ -126,8 +127,10 @@ signature.
 
 ## Building Node.js
 
-See [BUILDING.md](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/16/BUILDING.md) for instructions on how to build Node.js from
-source and a list of supported platforms.
+See
+[BUILDING.md](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/16/BUILDING.md)
+for instructions on how to build Node.js from source and a list of supported
+platforms.
 
 ## Security
 
@@ -632,8 +635,8 @@ For information about the governance of the Node.js project, see
 <!--lint enable prohibited-strings-->
 
 Collaborators follow the
-[Collaborator Guide](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/16/doc/contributing/collaborator-guide.md) in maintaining
-the Node.js project.
+[Collaborator Guide](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-unknown-linux-gnu/NODE/16/doc/contributing/collaborator-guide.md)
+in maintaining the Node.js project.
 
 ### Triagers
 

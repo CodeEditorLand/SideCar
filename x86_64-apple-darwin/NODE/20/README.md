@@ -4,14 +4,16 @@ Node.js is an open-source, cross-platform JavaScript runtime environment.
 
 For information on using Node.js, see the [Node.js website][].
 
-The Node.js project uses an [open governance model](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/GOVERNANCE.md). The
-[OpenJS Foundation][] provides support for the project.
+The Node.js project uses an
+[open governance model](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/GOVERNANCE.md).
+The [OpenJS Foundation][] provides support for the project.
 
 Contributors are expected to act in a collaborative manner to move the project
 forward. We encourage the constructive exchange of contrary opinions and
-compromise. The [TSC](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/GOVERNANCE.md#technical-steering-committee) reserves the
-right to limit or block contributors who repeatedly act in ways that discourage,
-exhaust, or otherwise negatively affect other participants.
+compromise. The
+[TSC](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/GOVERNANCE.md#technical-steering-committee)
+reserves the right to limit or block contributors who repeatedly act in ways
+that discourage, exhaust, or otherwise negatively affect other participants.
 
 **This project has a [Code of Conduct][].**
 
@@ -128,8 +130,10 @@ signature.
 
 ## Building Node.js
 
-See [BUILDING.md](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/BUILDING.md) for instructions on how to build Node.js from
-source and a list of supported platforms.
+See
+[BUILDING.md](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/BUILDING.md)
+for instructions on how to build Node.js from source and a list of supported
+platforms.
 
 ## Security
 
@@ -707,8 +711,8 @@ For information about the governance of the Node.js project, see
 <!--lint enable prohibited-strings-->
 
 Collaborators follow the
-[Collaborator Guide](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/doc/contributing/collaborator-guide.md) in maintaining
-the Node.js project.
+[Collaborator Guide](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/doc/contributing/collaborator-guide.md)
+in maintaining the Node.js project.
 
 ### Triagers
 
@@ -748,8 +752,8 @@ the Node.js project.
   <<mohammadkeyvanzade94@gmail.com>> (he/him)
 
 Triagers follow the
-[Triage Guide](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/doc/contributing/issues.md#triaging-a-bug-report) when
-responding to new issues.
+[Triage Guide](https://github.com/CodeEditorLand/SideCar/tree/Current/x86_64-apple-darwin/NODE/20/doc/contributing/issues.md#triaging-a-bug-report)
+when responding to new issues.
 
 ### Release keys
 
