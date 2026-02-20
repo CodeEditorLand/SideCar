@@ -71,7 +71,7 @@ bundling into the final application installer.
 
 ---
 
-## Key Features 🔐
+## Key Features 🔐
 
 - **Concurrent Downloads:** Parallel downloading of multiple runtime binaries
   using Tokio for maximum throughput.
@@ -86,7 +86,7 @@ bundling into the final application installer.
 
 ---
 
-## Core Architecture Principles 🏗️
+## Core Architecture Principles 🏗️
 
 | Principle                   | Description                                                                          | Key Components Involved                       |
 | :-------------------------- | :----------------------------------------------------------------------------------- | :-------------------------------------------- |
@@ -96,7 +96,7 @@ bundling into the final application installer.
 
 ---
 
-## `SideCar` in the Land Ecosystem ⚙️ + 🏞️
+## `SideCar` in the Land Ecosystem ⚙️ + 🏞️
 
 | Component         | Role & Key Responsibilities                                           |
 | :---------------- | :-------------------------------------------------------------------- |
@@ -106,7 +106,7 @@ bundling into the final application installer.
 
 ---
 
-## Getting Started 🚀
+## Getting Started 🚀
 
 ### Running the Download Tool
 
@@ -156,7 +156,7 @@ The SideCar directory is populated once during project setup:
 
 ---
 
-## System Architecture Diagram 🏗️
+## System Architecture Diagram 🏗️
 
 This diagram illustrates how `SideCar` vendors and organizes runtime
 dependencies.
@@ -197,7 +197,7 @@ DownloadBin --> TargetTriple
 
 ---
 
-## Deep Dive & Component Breakdown 🔬
+## Deep Dive & Component Breakdown 🔬
 
 To understand how `SideCar`'s download tool works, see the following source
 files:
@@ -228,7 +228,7 @@ file.
 
 ---
 
-## Changelog 📜
+## Changelog 📜
 
 Stay updated with our progress! See
 [`CHANGELOG.md`](https://github.com/CodeEditorLand/SideCar/tree/Current/) for a
@@ -236,7 +236,7 @@ history of changes specific to **SideCar**.
 
 ---
 
-## Funding & Acknowledgements 🙏🏻
+## Funding & Acknowledgements 🙏🏻
 
 **SideCar** is a core element of the **Land** ecosystem. This project is funded
 through [NGI0 Commons Fund](https://NLnet.NL/commonsfund), a fund established by
@@ -245,38 +245,38 @@ through [NGI0 Commons Fund](https://NLnet.NL/commonsfund), a fund established by
 [NLnet project page](https://NLnet.NL/project/Land).
 
 <table>
-<thead>
-<tr>
-<th align="left"><strong>Land</strong></th>
-<th align="left"><strong>PlayForm</strong></th>
-<th align="left"><strong>NLnet</strong></th>
-<th align="left"><strong>NGI0 Commons Fund</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left" valign="middle">
-<a href="https://Editor.Land">
-<img width="60" src="https://raw.githubusercontent.com/CodeEditorLand/Asset/refs/heads/Current/Logo/Land.svg" alt="Land">
-</a>
-</td>
-<td align="left" valign="middle">
-<a href="https://PlayForm.Cloud">
-<img width="76" src="https://raw.githubusercontent.com/PlayForm/Asset/refs/heads/Current/Logo/PlayForm.svg" alt="PlayForm">
-</a>
-</td>
-<td align="left" valign="middle">
-<a href="https://NLnet.NL">
-<img width="240" src="https://NLnet.NL/logo/banner.svg" alt="NLnet">
-</a>
-</td>
-<td align="left" valign="middle">
-<a href="https://NLnet.NL/commonsfund">
-<img width="240" src="https://NLnet.NL/image/logos/NGI0CommonsFund_tag_black_mono.svg" alt="NGI0 Commons Fund">
-</a>
-</td>
-</tr>
-</tbody>
+	<thead>
+		<tr>
+			<th align="left"><strong>Land</strong></th>
+			<th align="left"><strong>PlayForm</strong></th>
+			<th align="left"><strong>NLnet</strong></th>
+			<th align="left"><strong>NGI0 Commons Fund</strong></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td align="left" valign="middle">
+				<a href="https://Editor.Land">
+					<img width="60" src="https://raw.githubusercontent.com/CodeEditorLand/Asset/refs/heads/Current/Logo/Land.svg" alt="Land">
+				</a>
+			</td>
+			<td align="left" valign="middle">
+				<a href="https://PlayForm.Cloud">
+					<img width="76" src="https://raw.githubusercontent.com/PlayForm/Asset/refs/heads/Current/Logo/PlayForm.svg" alt="PlayForm">
+				</a>
+			</td>
+			<td align="left" valign="middle">
+				<a href="https://NLnet.NL">
+					<img width="240" src="https://NLnet.NL/logo/banner.svg" alt="NLnet">
+				</a>
+			</td>
+			<td align="left" valign="middle">
+				<a href="https://NLnet.NL/commonsfund">
+					<img width="240" src="https://NLnet.NL/image/logos/NGI0CommonsFund_tag_black_mono.svg" alt="NGI0 Commons Fund">
+				</a>
+			</td>
+		</tr>
+	</tbody>
 </table>
 
 ---
