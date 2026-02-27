@@ -10,6 +10,7 @@ struct Package {
 
 fn main() {
 	println!("cargo:rerun-if-changed=Cargo.toml");
+	println!("cargo:rerun-if-changed=Resource/dns-override.js");
 
 	println!(
 		"cargo:rustc-env=CARGO_PKG_VERSION={}",

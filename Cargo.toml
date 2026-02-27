@@ -4,11 +4,12 @@ path = "Source/Download.rs"
 
 [[bin]]
 name = "SideCar"
-path = "Source/Library.rs"
+path = "Source/main.rs"
 
 [build-dependencies]
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
+tauri-build = { workspace = true }
 
 [dependencies]
 tokio = { workspace = true, features = ["full"] }
@@ -27,6 +28,10 @@ log = { workspace = true }
 env_logger = { workspace = true }
 fs_extra = { workspace = true }
 toml = { workspace = true }
+# TODO: Added tauri-plugin-shell for Tauri 2.x shell API support (shell() method on AppHandle)
+tauri-plugin-shell = "2.0"
+Mist = { workspace = true }
+tauri = { workspace = true }
 
 [lib]
 path = "Source/Library.rs"
