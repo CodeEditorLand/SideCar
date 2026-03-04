@@ -2,7 +2,7 @@
 #![allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 /// Main executable function.
-/// TODO: Move this function to main.rs in a future refactor
+/// DEPENDENCY: Move this function to main.rs in a future refactor
 #[allow(dead_code)]
 pub fn main() {
 	if let Err(Error) = Download::Fn() {

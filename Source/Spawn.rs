@@ -1,4 +1,4 @@
-// TODO: This module file was created to resolve a missing module error.
+// DEPENDENCY: This module file was created to resolve a missing module error.
 // The original Spawn.rs was located at Source/Source/SideCar/Spawn.rs in an unusual directory structure.
 // Consider refactoring the directory structure to avoid duplicate/confusing module locations.
 
@@ -7,7 +7,7 @@ use tauri::{AppHandle, Manager};
 use std::fs;
 // Note: Mist crate has lib name "mist", so we use lowercase for imports
 use mist::dns_port;
-// TODO: Add tauri-plugin-shell to Cargo.toml dependencies for Tauri 2.x shell support
+// DEPENDENCY: Add tauri-plugin-shell to Cargo.toml dependencies for Tauri 2.x shell support
 use tauri_plugin_shell::ShellExt;
 
 const DNS_OVERRIDE: &str = include_str!("../Resource/dns-override.js");
