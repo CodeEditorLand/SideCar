@@ -222,8 +222,9 @@ DownloadBin --> TargetTriple
 
 ---
 
-## Deep Dive & Component Breakdown 🔬 To understand how `SideCar`'s download tool works, see the following source
+## Deep Dive & Component Breakdown 🔬
 
+To understand how `SideCar`'s download tool works, see the following source
 files:
 
 - **[`Source/Download.rs`](https://github.com/CodeEditorLand/SideCar/tree/Current/Source/Download.rs)** -
