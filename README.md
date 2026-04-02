@@ -5,7 +5,7 @@
 </td>
 <td align="left" valign="middle">
 <h3 align="left">
- ⚙️ 
+ ⚙️
 </h3>
 </td>
 <td align="left" valign="middle">
@@ -37,31 +37,33 @@ Land
 
 ---
 
-# **SideCar** ⚙️ Pre-Compiled Native Dependencies for Land 🏞️
+# **SideCar** ⚙️
 
-Welcome to **SideCar**, the central repository for all pre-compiled,
-platform-specific sidecar binaries required by the **Land Code Editor**
-ecosystem. A "sidecar" is an external, standalone executable that runs alongside
-the main `Mountain` application to provide specialized functionality, such as
-the `Cocoon` extension host which runs on Node.js.
+Pre-Compiled Native Dependencies for Land 🏞️
+
+**SideCar** is the central repository for all pre-compiled, platform-specific
+sidecar binaries required by the **Land Code Editor** ecosystem. A "sidecar" is
+a standalone executable that runs alongside the main `Mountain` application to
+provide specialized functionality, such as the `Cocoon` extension host on
+Node.js.
 
 **SideCar** is engineered to:
 
-1. **Provide Portable Runtimes**: Vendored Node.js and other runtimes eliminate
+1. **Provide Portable Runtimes:** Vendored Node.js and other runtimes eliminate
    user dependency requirements.
-2. **Enable Deterministic Builds**: Organized by target triple for build-time
+2. **Enable Deterministic Builds:** Organized by target triple for build-time
    binary selection.
-3. **Support Multiple Platforms**: Comprehensive matrix for macOS, Linux, and
+3. **Support Multiple Platforms:** Comprehensive matrix for macOS, Linux, and
    Windows on x86_64 and aarch64 architectures.
-4. **Automate Download Management**: Automated fetching, caching, and Git LFS
+4. **Automate Download Management:** Automated fetching, caching, and Git LFS
    management of runtime binaries.
 
 ---
 
-## Directory Structure 📁
+## Directory Structure 📁
 
-The SideCar directory is organized to allow for deterministic selection by the
-build system:
+The SideCar directory is organized to allow deterministic selection by the build
+system:
 
 ```
 SideCar/
@@ -74,19 +76,19 @@ SideCar/
             └── ... (other files from the distribution)
 ```
 
-- **`[target-triple]`**: The platform-specific identifier used by Rust/Tauri
+- **`[target-triple]`:** The platform-specific identifier used by Rust/Tauri
   (e.g., `x86_64-pc-windows-msvc`, `aarch64-apple-darwin`). This allows the
   build system to find the correct binary for the target platform.
-- **`[SIDECAR_NAME]`**: The name of the runtime (e.g., `NODE`).
-- **`[version]`**: The major version number of the runtime (e.g., `22`).
+- **`[SIDECAR_NAME]`:** The name of the runtime (e.g., `NODE`).
+- **`[version]`:** The major version number of the runtime (e.g., `22`).
 
 ### How It's Used
 
 The
 [`Download`](https://github.com/CodeEditorLand/SideCar/tree/Current/Source/Download.rs)
-Rust binary is responsible for populating this structure. It fetches the
-official distributions for various sidecars and platforms and organizes them
-according to the convention above.
+Rust binary populates this structure. It fetches official distributions for
+various sidecars and platforms and organizes them according to the convention
+above.
 
 During the application build, the main `Build.rs` orchestrator uses this
 repository as a source. Based on build flags (e.g., `--node-version=22`), it
@@ -95,7 +97,7 @@ bundling into the final application installer.
 
 ---
 
-## Key Features 🔐
+## Key Features 🔐
 
 - **Concurrent Downloads**: Parallel downloading of multiple runtime binaries
   using Tokio for maximum throughput.
@@ -120,7 +122,7 @@ bundling into the final application installer.
 
 ---
 
-## `SideCar` in the Land Ecosystem ⚙️ + 🏞️
+## `SideCar` in the Land Ecosystem ⚙️ + 🏞️
 
 | Component         | Role & Key Responsibilities                                           |
 | :---------------- | :-------------------------------------------------------------------- |
@@ -130,7 +132,7 @@ bundling into the final application installer.
 
 ---
 
-## Getting Started 🚀
+## Getting Started 🚀
 
 ### Running the Download Tool
 
@@ -145,19 +147,19 @@ cargo build --release
 
 **Key Dependencies:**
 
-- `tokio`: Async runtime for concurrent downloads
-- `reqwest`: HTTP client for fetching binaries
-- `serde`/`serde_json`: Cache.json serialization
-- `git2`: Git LFS management
+- `tokio` — Async runtime for concurrent downloads
+- `reqwest` — HTTP client for fetching binaries
+- `serde`/`serde_json` — Cache.json serialization
+- `git2` — Git LFS management
 
-### Usage Pattern 🚀
+### Usage Pattern 🚀
 
 The SideCar directory is populated once during project setup:
 
-1. **Build Download Tool:** Compile the `Download` binary
-2. **Run Download:** Execute to fetch and organize all runtime binaries
+1. **Build Download Tool:** Compile the `Download` binary.
+2. **Run Download:** Execute to fetch and organize all runtime binaries.
 3. **Build Mountain:** The build system selects appropriate binaries from
-   SideCar
+   SideCar.
 
 > [!NOTE]
 >
@@ -174,7 +176,7 @@ The SideCar directory is populated once during project setup:
 > # Build the download tool
 > cd Element/SideCar
 > cargo build --release
-> 
+>
 > # Run to download and organize all sidecars
 > ./Target/release/Download
 > ```
@@ -197,7 +199,7 @@ NodeJSOrg["nodejs.org"]:::external
 OtherRuntimes["Other Runtime Sources"]:::external
 end
 
-subgraph "SideCar ⚙️  (Download Tool)"
+subgraph "SideCar ⚙️  (Download Tool)"
 DownloadBin["Download Binary"]:::sidecar
 CacheJSON["Cache.json"]:::sidecar
 GitLFS[".gitattributes (LFS)"]:::sidecar
@@ -222,15 +224,15 @@ DownloadBin --> TargetTriple
 
 ---
 
-## Deep Dive & Component Breakdown 🔬
+## Deep Dive & Component Breakdown 🔬
 
 To understand how `SideCar`'s download tool works, see the following source
 files:
 
-- **[`Source/Download.rs`](https://github.com/CodeEditorLand/SideCar/tree/Current/Source/Download.rs)** -
-  Main download binary entry point
-- **[`Cache.json`](Cache.json)** - Download cache tracking file
-- **[[`.gitattributes`](.gitattributes)](.gitattributes)** - Git LFS
+- **[`Source/Download.rs`](https://github.com/CodeEditorLand/SideCar/tree/Current/Source/Download.rs)**
+  — Main download binary entry point
+- **[`Cache.json`](Cache.json)** — Download cache tracking file
+- **[[`.gitattributes`](.gitattributes)](.gitattributes)** — Git LFS
   configuration for large binaries
 
 The download tool handles concurrent downloads, version resolution from
@@ -245,11 +247,9 @@ nodejs.org, and automatic Git LFS management for tracking large binary files.
 
 ## License ⚖️
 
-This project is released into the public domain under the **Creative Commons CC0
-Universal** license. You are free to use, modify, distribute, and build upon
-this work for any purpose, without any restrictions. For the full legal text,
-see the [`LICENSE`](https://github.com/CodeEditorLand/SideCar/tree/Current/)
-file.
+This project is licensed under Creative Commons CC0.
+
+See the LICENSE file for details.
 
 ---
 
@@ -263,11 +263,14 @@ history of changes specific to **SideCar**.
 
 ## Funding & Acknowledgements 🙏🏻
 
-**SideCar** is a core element of the **Land** ecosystem. This project is funded
-through [NGI0 Commons Fund](https://NLnet.NL/commonsfund), a fund established by
-[NLnet](https://NLnet.NL) with financial support from the European Commission's
-[Next Generation Internet](https://ngi.eu) program. Learn more at the
-[NLnet project page](https://NLnet.NL/project/Land).
+Code Editor Land is funded through the NGI0 Commons Fund, established by NLnet
+with financial support from the European Commission's Next Generation Internet
+programme, under grant agreement No. 101135429.
+
+The project is operated by PlayForm, based in Sofia, Bulgaria.
+
+PlayForm acts as the open-source steward for Code Editor Land under the NGI0
+Commons Fund grant.
 
 <table>
 	<thead>
