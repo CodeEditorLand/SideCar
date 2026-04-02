@@ -37,9 +37,9 @@ Land
 
 ---
 
-# **SideCar** ⚙️
+# **SideCar** ⚙️
 
-Pre-Compiled Native Dependencies for Land 🏞️
+Pre-Compiled Native Dependencies for Land 🏞️
 
 **SideCar** is the central repository for all pre-compiled, platform-specific
 sidecar binaries required by the **Land Code Editor** ecosystem. A "sidecar" is
@@ -60,7 +60,7 @@ Node.js.
 
 ---
 
-## Directory Structure 📁
+## Directory Structure 📁
 
 The SideCar directory is organized to allow deterministic selection by the build
 system:
@@ -97,7 +97,7 @@ bundling into the final application installer.
 
 ---
 
-## Key Features 🔐
+## Key Features 🔐
 
 - **Concurrent Downloads**: Parallel downloading of multiple runtime binaries
   using Tokio for maximum throughput.
@@ -122,7 +122,7 @@ bundling into the final application installer.
 
 ---
 
-## `SideCar` in the Land Ecosystem ⚙️ + 🏞️
+## `SideCar` in the Land Ecosystem ⚙️ + 🏞️
 
 | Component         | Role & Key Responsibilities                                           |
 | :---------------- | :-------------------------------------------------------------------- |
@@ -132,7 +132,7 @@ bundling into the final application installer.
 
 ---
 
-## Getting Started 🚀
+## Getting Started 🚀
 
 ### Running the Download Tool
 
@@ -152,7 +152,7 @@ cargo build --release
 - `serde`/`serde_json` — Cache.json serialization
 - `git2` — Git LFS management
 
-### Usage Pattern 🚀
+### Usage Pattern 🚀
 
 The SideCar directory is populated once during project setup:
 
@@ -224,7 +224,7 @@ DownloadBin --> TargetTriple
 
 ---
 
-## Deep Dive & Component Breakdown 🔬
+## Deep Dive & Component Breakdown 🔬
 
 To understand how `SideCar`'s download tool works, see the following source
 files:
