@@ -47,16 +47,19 @@ a standalone executable that runs alongside the main `Mountain` application to
 provide specialized functionality, such as the `Cocoon` extension host on
 Node.js.
 
-**SideCar** is engineered to:
+**What SideCar gives you:**
 
-1. **Provide Portable Runtimes:** Vendored Node.js and other runtimes eliminate
-   user dependency requirements.
-2. **Enable Deterministic Builds:** Organized by target triple for build-time
-   binary selection.
-3. **Support Multiple Platforms:** Comprehensive matrix for macOS, Linux, and
-   Windows on x86_64 and aarch64 architectures.
-4. **Automate Download Management:** Automated fetching, caching, and Git LFS
-   management of runtime binaries.
+1. **No "install Node.js first".** Land ships its own Node.js binary. Users
+   install the editor and it works. No prerequisites, no version conflicts.
+2. **Every platform covered.** macOS (Intel + Apple Silicon), Windows (x64),
+   Linux (x64 + ARM64). One build system handles all six targets.
+3. **Deterministic binary selection.** Organized by target triple
+   (`aarch64-apple-darwin`, etc.). The build picks the right binary at compile
+   time.
+4. **Automated fetching.** Download, cache, and verify Node.js binaries with
+   Git LFS. No manual binary management.
+
+📖 **[Rust API Documentation](https://Rust.Documentation.Editor.Land/SideCar/)**
 
 ---
 
