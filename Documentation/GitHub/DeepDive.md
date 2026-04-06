@@ -57,14 +57,14 @@ graph TB
 
 ## Key Modules
 
-| Path | Description |
-| :--- | :--- |
+| Path                 | Description                                                                                        |
+| :------------------- | :------------------------------------------------------------------------------------------------- |
 | `Source/Download.rs` | Main download binary: fetches runtime distributions, resolves versions, organizes by target triple |
-| `Source/Spawn.rs` | Spawn helper: invoked by Mountain to launch a sidecar binary from the vendored store |
-| `Source/Library.rs` | Shared library code: version resolution utilities, path helpers, cache types |
-| `Source/Source/` | Internal module source files for the library |
-| `Cache.json` | Tracks which versions have been downloaded per target triple to avoid redundant fetches |
-| `.gitattributes` | Configured by the download tool to register large binary files with Git LFS |
+| `Source/Spawn.rs`    | Spawn helper: invoked by Mountain to launch a sidecar binary from the vendored store               |
+| `Source/Library.rs`  | Shared library code: version resolution utilities, path helpers, cache types                       |
+| `Source/Source/`     | Internal module source files for the library                                                       |
+| `Cache.json`         | Tracks which versions have been downloaded per target triple to avoid redundant fetches            |
+| `.gitattributes`     | Configured by the download tool to register large binary files with Git LFS                        |
 
 ---
 
@@ -99,25 +99,25 @@ resource path for bundling into the application installer.
 
 ## Integration Points
 
-| Connecting Element | Direction | Mechanism | Description |
-| :--- | :--- | :--- | :--- |
-| **Mountain** | Consumer | `build.rs` file copy | Mountain's build script selects the correct Node.js binary by target triple |
-| **Tauri** | Consumer | Sidecar resource bundling | Tauri bundles the selected binary into the platform installer |
-| **Cocoon** | Runtime dependency | Spawned process | Mountain spawns Cocoon using the vendored Node.js binary from the SideCar store |
-| **Air** | Potential consumer | Same convention | Additional daemon binaries may be vendored using the same target-triple structure |
+| Connecting Element | Direction          | Mechanism                 | Description                                                                       |
+| :----------------- | :----------------- | :------------------------ | :-------------------------------------------------------------------------------- |
+| **Mountain**       | Consumer           | `build.rs` file copy      | Mountain's build script selects the correct Node.js binary by target triple       |
+| **Tauri**          | Consumer           | Sidecar resource bundling | Tauri bundles the selected binary into the platform installer                     |
+| **Cocoon**         | Runtime dependency | Spawned process           | Mountain spawns Cocoon using the vendored Node.js binary from the SideCar store   |
+| **Air**            | Potential consumer | Same convention           | Additional daemon binaries may be vendored using the same target-triple structure |
 
 ---
 
 ## Configuration
 
-| Parameter | Convention / Value | Description |
-| :--- | :--- | :--- |
-| Directory structure | `[target-triple]/[NAME]/[version]/bin/` | Standard layout for deterministic build-time binary selection |
-| Target triples | `x86_64-pc-windows-msvc`, `aarch64-apple-darwin`, `x86_64-unknown-linux-gnu`, etc. | All Tauri-supported platform identifiers |
-| Node.js major version | `22` (current default) | Controlled by the `--node-version` build flag |
-| Cache file | `Cache.json` | JSON map of `{ "[triple]/[name]/[major]": "[resolved-version]" }` |
-| Git LFS | `.gitattributes` auto-updated | All `*.node`, `node`, `node.exe` binaries tracked via LFS |
+| Parameter             | Convention / Value                                                                 | Description                                                       |
+| :-------------------- | :--------------------------------------------------------------------------------- | :---------------------------------------------------------------- |
+| Directory structure   | `[target-triple]/[NAME]/[version]/bin/`                                            | Standard layout for deterministic build-time binary selection     |
+| Target triples        | `x86_64-pc-windows-msvc`, `aarch64-apple-darwin`, `x86_64-unknown-linux-gnu`, etc. | All Tauri-supported platform identifiers                          |
+| Node.js major version | `22` (current default)                                                             | Controlled by the `--node-version` build flag                     |
+| Cache file            | `Cache.json`                                                                       | JSON map of `{ "[triple]/[name]/[major]": "[resolved-version]" }` |
+| Git LFS               | `.gitattributes` auto-updated                                                      | All `*.node`, `node`, `node.exe` binaries tracked via LFS         |
 
-The SideCar directory is not committed to version control in its populated
-form. Developers run the Download tool once during initial project setup, and
-CI environments run it as part of the release pipeline.
+The SideCar directory is not committed to version control in its populated form.
+Developers run the Download tool once during initial project setup, and CI
+environments run it as part of the release pipeline.
