@@ -1,0 +1,37 @@
+################################################################################
+# Git LFS configuration for vendored Tauri Sidecars
+#
+# This file tells Git to use LFS (Large File Storage) for the heavy binary
+# files and modules downloaded by the sidecar vendoring script. This keeps the
+# main repository history small and fast.
+#
+# The `-text` attribute is used to prevent Git from normalizing line endings,
+
+# which is critical for binary files and scripts.
+#
+# This file is automatically managed by the sidecar vendor script.
+################################################################################
+
+# --- Rule Definitions ---
+**/NODE/**/bin/node filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/node.exe filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/bin/npm filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/bin/npx filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/bin/corepack filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/npm filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/npm.cmd filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/npx filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/npx.cmd filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/corepack filter=lfs diff=lfs merge=lfs -text
+**/NODE/**/corepack.cmd filter=lfs diff=lfs merge=lfs -text
+
+# --- Rules for the SideCar build artifacts ---
+
+Target/debug/*.exe filter=lfs diff=lfs merge=lfs -text
+Target/release/*.exe filter=lfs diff=lfs merge=lfs -text
+
+Target/debug/SideCar filter=lfs diff=lfs merge=lfs -text
+Target/release/SideCar filter=lfs diff=lfs merge=lfs -text
+
+Target/debug/Download filter=lfs diff=lfs merge=lfs -text
+Target/release/Download filter=lfs diff=lfs merge=lfs -text
