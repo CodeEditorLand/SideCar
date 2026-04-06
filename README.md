@@ -144,7 +144,7 @@ bundling into the final application installer.
 
 ---
 
-## `SideCar` in the Land Ecosystem&#x2001;⚙️ + 🏞️
+## `SideCar` in the Land Ecosystem&#x2001;⚙️ + 🏞️
 
 | Component         | Role & Key Responsibilities                                           |
 | :---------------- | :-------------------------------------------------------------------- |
