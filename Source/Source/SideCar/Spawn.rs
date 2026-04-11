@@ -1,22 +1,27 @@
+use std::fs;
+
 #[allow(unused_imports)]
 use tauri::{AppHandle, Manager};
-use std::fs;
 use Mist::dns_port;
 
-const DNS_OVERRIDE: &str = include_str!("../../../Resource/dns-override.js");
+const DNS_OVERRIDE:&str = include_str!("../../../Resource/dns-override.js");
 
-/// Spawns a Node.js sidecar with DNS override configured to use the local Hickory DNS server.
+/// Spawns a Node.js sidecar with DNS override configured to use the local
+/// Hickory DNS server.
 ///
 /// This function:
 /// 1. Creates the app data directory if it doesn't exist
 /// 2. Writes the DNS override JavaScript file to the app data directory
-/// 3. Configures the sidecar process with NODE_OPTIONS to require the DNS override script
-/// 4. Sets the LAND_DNS_SERVER environment variable with the local DNS server address
+/// 3. Configures the sidecar process with NODE_OPTIONS to require the DNS
+///    override script
+/// 4. Sets the LAND_DNS_SERVER environment variable with the local DNS server
+///    address
 /// 5. Spawns the sidecar process
 ///
 /// # Parameters
 ///
-/// * `app` - The Tauri app handle, used to access the app data directory and shell
+/// * `app` - The Tauri app handle, used to access the app data directory and
+///   shell
 /// * `sidecar_name` - The name of the sidecar executable to spawn
 ///
 /// # Returns
@@ -33,35 +38,31 @@ const DNS_OVERRIDE: &str = include_str!("../../../Resource/dns-override.js");
 /// use SideCar::Spawn::spawn_node_sidecar;
 ///
 /// #[tauri::command]
-/// fn launch_sidecar(app: tauri::AppHandle) -> Result<(), String> {
-///     spawn_node_sidecar(&app, "my-sidecar")
-///         .map_err(|e| e.to_string())?;
-///     Ok(())
+/// fn launch_sidecar(app:tauri::AppHandle) -> Result<(), String> {
+/// 	spawn_node_sidecar(&app, "my-sidecar").map_err(|e| e.to_string())?;
+/// 	Ok(())
 /// }
 /// ```
 #[allow(dead_code)]
-pub fn spawn_node_sidecar(
-    app: &AppHandle,
-    sidecar_name: &str,
-) -> anyhow::Result<()> {
-    // Ensure app data directory exists
-    let data_dir = app.path().app_data_dir()?;
-    fs::create_dir_all(&data_dir)?;
+pub fn spawn_node_sidecar(app:&AppHandle, sidecar_name:&str) -> anyhow::Result<()> {
+	// Ensure app data directory exists
+	let data_dir = app.path().app_data_dir()?;
+	fs::create_dir_all(&data_dir)?;
 
-    // Write DNS override script to app data directory
-    let override_path = data_dir.join("dns-override.js");
-    fs::write(&override_path, DNS_OVERRIDE)?;
+	// Write DNS override script to app data directory
+	let override_path = data_dir.join("dns-override.js");
+	fs::write(&override_path, DNS_OVERRIDE)?;
 
-    // Get the DNS server port from Mist module
-    let port = dns_port();
-    let node_opts = format!("--require {}", override_path.display());
+	// Get the DNS server port from Mist module
+	let port = dns_port();
+	let node_opts = format!("--require {}", override_path.display());
 
-    // Spawn the sidecar with DNS configuration
-    app.shell()
-        .sidecar(sidecar_name)?
-        .env("NODE_OPTIONS",    &node_opts)
-        .env("LAND_DNS_SERVER", format!("127.0.0.1:{port}"))
-        .spawn()?;
+	// Spawn the sidecar with DNS configuration
+	app.shell()
+		.sidecar(sidecar_name)?
+		.env("NODE_OPTIONS", &node_opts)
+		.env("LAND_DNS_SERVER", format!("127.0.0.1:{port}"))
+		.spawn()?;
 
-    Ok(())
+	Ok(())
 }
