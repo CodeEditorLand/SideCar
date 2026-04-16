@@ -202,8 +202,8 @@ files:
 
 - **[`Source/Download.rs`](https://github.com/CodeEditorLand/SideCar/tree/Current/Source/Download.rs)** -
   Main download binary entry point
-- **[`Cache.json`](Cache.json)** - Download cache tracking file
-- **[`.gitattributes`](.gitattributes)** - Git LFS configuration for large
+- **[`Cache.json`](https://github.com/CodeEditorLand/SideCar/tree/Current/Cache.json)** - Download cache tracking file
+- **[`.gitattributes`](https://github.com/CodeEditorLand/SideCar/tree/Current/.gitattributes)** - Git LFS configuration for large
   binaries
 
 The download tool handles concurrent downloads via Tokio, version resolution
