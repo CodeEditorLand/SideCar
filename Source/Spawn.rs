@@ -7,8 +7,8 @@ use std::fs;
 
 #[allow(unused_imports)]
 use tauri::{AppHandle, Manager};
-// Note: Mist crate has lib name "mist", so we use lowercase for imports
-use mist::dns_port;
+// Note: Mist crate has lib name "Mist", so we use that for imports
+use Mist::dns_port;
 // DEPENDENCY: Add tauri-plugin-shell to Cargo.toml dependencies for Tauri 2.x shell support
 use tauri_plugin_shell::ShellExt;
 
