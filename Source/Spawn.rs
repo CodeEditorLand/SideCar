@@ -22,7 +22,7 @@ const DNS_OVERRIDE:&str = include_str!("../Resource/dns-override.js");
 /// 2. Writes the DNS override JavaScript file to the app data directory
 /// 3. Configures the sidecar process with NODE_OPTIONS to require the DNS
 ///    override script
-/// 4. Sets the LAND_DNS_SERVER environment variable with the local DNS server
+/// 4. Sets the Resolve environment variable with the local DNS server
 ///    address
 /// 5. Spawns the sidecar process
 ///
@@ -69,7 +69,7 @@ pub fn spawn_node_sidecar(app:&AppHandle, sidecar_name:&str) -> anyhow::Result<(
 	app.shell()
 		.sidecar(sidecar_name)?
 		.env("NODE_OPTIONS", &node_opts)
-		.env("LAND_DNS_SERVER", format!("127.0.0.1:{port}"))
+		.env("Resolve", format!("127.0.0.1:{port}"))
 		.spawn()?;
 
 	Ok(())
