@@ -31,6 +31,7 @@ toml = { workspace = true }
 # DEPENDENCY: Added tauri-plugin-shell for Tauri 2.x shell API support (shell() method on AppHandle)
 tauri-plugin-shell = "2.3"
 Mist = { workspace = true }
+Common = { workspace = true }
 tauri = { workspace = true }
 
 [lib]

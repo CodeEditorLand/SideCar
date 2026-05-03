@@ -22,8 +22,7 @@ const DNS_OVERRIDE:&str = include_str!("../Resource/dns-override.js");
 /// 2. Writes the DNS override JavaScript file to the app data directory
 /// 3. Configures the sidecar process with NODE_OPTIONS to require the DNS
 ///    override script
-/// 4. Sets the Resolve environment variable with the local DNS server
-///    address
+/// 4. Sets the Resolve environment variable with the local DNS server address
 /// 5. Spawns the sidecar process
 ///
 /// # Parameters

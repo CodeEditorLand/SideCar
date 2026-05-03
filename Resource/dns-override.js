@@ -3,9 +3,7 @@
 const dns = require("dns");
 const { Resolver } = dns;
 
-const [host, portStr] = (process.env.Resolve || "127.0.0.1:5380").split(
-	":",
-);
+const [host, portStr] = (process.env.Resolve || "127.0.0.1:5380").split(":");
 const servers = [`${host}:${portStr}`];
 
 dns.setServers(servers); // affects net.lookup global path

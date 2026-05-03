@@ -610,6 +610,10 @@ pub fn Logger() {
 
 #[tokio::main]
 pub async fn Fn() -> Result<()> {
+	// [Boot] [Telemetry] Bring up shared dual-pipe (PostHog + OTLP).
+	// No-op in release builds and when `Capture=false`.
+	CommonLibrary::Telemetry::Initialize::Fn(CommonLibrary::Telemetry::Tier::Tier::SideCar).await;
+
 	Logger();
 
 	info!("Starting Universal Sidecar vendoring process...");
