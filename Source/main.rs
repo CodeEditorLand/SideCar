@@ -20,5 +20,6 @@ fn main() {
 	// Currently Library.rs contains both lib and binary code
 	// For now, delegate to the library's main function
 	use SideCar::main as lib_main;
+
 	lib_main();
 }

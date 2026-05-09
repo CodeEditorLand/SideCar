@@ -14,8 +14,7 @@ const DNS_OVERRIDE:&str = include_str!("../../../Resource/dns-override.js");
 /// 2. Writes the DNS override JavaScript file to the app data directory
 /// 3. Configures the sidecar process with NODE_OPTIONS to require the DNS
 ///    override script
-/// 4. Sets the Resolve environment variable with the local DNS server
-///    address
+/// 4. Sets the Resolve environment variable with the local DNS server address
 /// 5. Spawns the sidecar process
 ///
 /// # Parameters
@@ -47,14 +46,17 @@ const DNS_OVERRIDE:&str = include_str!("../../../Resource/dns-override.js");
 pub fn spawn_node_sidecar(app:&AppHandle, sidecar_name:&str) -> anyhow::Result<()> {
 	// Ensure app data directory exists
 	let data_dir = app.path().app_data_dir()?;
+
 	fs::create_dir_all(&data_dir)?;
 
 	// Write DNS override script to app data directory
 	let override_path = data_dir.join("dns-override.js");
+
 	fs::write(&override_path, DNS_OVERRIDE)?;
 
 	// Get the DNS server port from Mist module
 	let port = dns_port();
+
 	let node_opts = format!("--require {}", override_path.display());
 
 	// Spawn the sidecar with DNS configuration
