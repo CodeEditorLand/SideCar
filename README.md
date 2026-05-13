@@ -73,25 +73,22 @@ the `Cocoon` extension host which runs on Node.js.
 
 ## Directory Structure&#x2001;📁
 
-The SideCar directory is organized to allow for deterministic selection by the
-build system:
-
 ```
 SideCar/
-└── [target-triple]/
-    └── [SIDECAR_NAME]/
-        └── [version]/
-            ├── bin/
-            │   └── node
-            ├── node.exe
-            └── ... (other files from the distribution)
+├── Source/
+│   ├── Download.rs              # Main download binary: fetches, verifies, and organizes platform binaries.
+│   ├── Library.rs               # Module declarations and shared utilities.
+│   └── Spawn.rs                 # Sidecar process spawning logic.
+├── build.rs                     # Build script: binary selection and staging for the final installer.
+├── Cargo.toml
+├── Cache.json                   # Download cache metadata (tracks fetched versions per platform).
+├── aarch64-apple-darwin/        # macOS Apple Silicon binaries (Node.js per version).
+├── x86_64-apple-darwin/         # macOS Intel binaries.
+├── x86_64-pc-windows-msvc/      # Windows x64 binaries.
+├── aarch64-unknown-linux-gnu/   # Linux ARM64 (glibc) binaries.
+├── x86_64-unknown-linux-gnu/    # Linux x64 (glibc) binaries.
+└── Resource/                    # Shared resources bundled with sidecars.
 ```
-
-- **`[target-triple]`**: The platform-specific identifier used by Rust/Tauri
-  (e.g., `x86_64-pc-windows-msvc`, `aarch64-apple-darwin`). This allows the
-  build system to find the correct binary for the target platform.
-- **`[SIDECAR_NAME]`**: The name of the runtime (e.g., `NODE`).
-- **`[version]`**: The major version number of the runtime (e.g., `22`).
 
 ### Supported Target Triples
 
