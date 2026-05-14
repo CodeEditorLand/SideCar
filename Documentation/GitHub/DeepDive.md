@@ -1,4 +1,4 @@
-# SideCar — Deep Dive
+# SideCar - Deep Dive
 
 This document provides the technical foundation for the SideCar binary
 distribution layer within the Land ecosystem. **SideCar** manages pre-compiled,
@@ -16,7 +16,7 @@ launch sidecars from the vendored binary store.
 
 ```mermaid
 graph TB
-    subgraph "SideCar — Binary Distribution"
+    subgraph "SideCar - Binary Distribution"
         DownloadBin["Source/Download.rs\nDownload binary entry"]
         SpawnBin["Source/Spawn.rs\nSpawn helper binary"]
         LibraryRS["Source/Library.rs\nShared library"]
