@@ -1,8 +1,12 @@
-# SideCar: Vendored Runtime Manager
+# SideCar: Vendored Runtime Manager 🚗
 
-This document describes SideCar, the vendored runtime binary manager for Land.
-SideCar handles the download, caching, verification, and management of Node.js
-runtime binaries for each target platform.
+This document describes `SideCar`, the vendored runtime binary manager for
+`Land`:
+
+- Handles download, caching, verification, and management of `Node.js` runtime
+  binaries
+- Supports multiple target platforms
+- Integrates with `Mountain` at both build time and runtime
 
 ---
 
@@ -37,24 +41,26 @@ graph TB
     SP -->|"Node.js process"| COCOON["Cocoon<br/>Extension Host"]
 ```
 
-## Overview
+## Overview 📋
 
-SideCar is a Rust library and binary that manages pre-compiled native dependency
-binaries for Land. It currently handles Node.js runtime binaries, downloading
-them from official sources and making them available to Mountain at build time
-and runtime.
+`SideCar` is a `Rust` library and binary that manages pre-compiled native
+dependency binaries for `Land`:
 
-| Attribute    | Value                                                 |
-| ------------ | ----------------------------------------------------- |
-| Language     | Rust (edition 2024)                                   |
-| Crate type   | Library + Binary                                      |
-| Dependencies | tokio, reqwest, serde, zip, tar, flate2, Common, Mist |
-| Consumed by  | Mountain (build-time binary selection)                |
-| Storage      | SideCar/Cache.json + per-platform cached binaries     |
+- Currently handles `Node.js` runtime binaries
+- Downloads them from official sources
+- Makes them available to `Mountain` at build time and runtime
+
+| Attribute    | Value                                                                 |
+| ------------ | --------------------------------------------------------------------- |
+| Language     | `Rust` (edition 2024)                                                 |
+| Crate type   | Library + Binary                                                      |
+| Dependencies | `tokio`, `reqwest`, `serde`, `zip`, `tar`, `flate2`, `Common`, `Mist` |
+| Consumed by  | `Mountain` (build-time binary selection)                              |
+| Storage      | `SideCar/Cache.json` + per-platform cached binaries                   |
 
 ---
 
-## Architecture
+## Architecture 🏗️
 
 ```
 +---------------------------------------------------------------+
@@ -76,20 +82,20 @@ and runtime.
 +---------------------------------------------------------------+
 ```
 
-### Module Map
+### Module Map 🗺️
 
 | Path                 | Purpose                                                 |
 | -------------------- | ------------------------------------------------------- |
 | `Source/Download.rs` | Binary download, archive extraction, platform targeting |
-| `Source/Spawn.rs`    | Node.js sidecar process spawning with DNS override      |
+| `Source/Spawn.rs`    | `Node.js` sidecar process spawning with DNS override    |
 | `Source/Library.rs`  | Library root                                            |
 | `Source/main.rs`     | Binary entry point for standalone operation             |
 
 ---
 
-## Binary Resolution
+## Binary Resolution 🔍
 
-The resolution process selects the correct Node.js binary for the target
+The resolution process selects the correct `Node.js` binary for the target
 platform:
 
 ```
@@ -122,15 +128,15 @@ SideCar::resolve()
 Return resolved binary path to Mountain
 ```
 
-### Version Resolution Priority
+### Version Resolution Priority 📊
 
 1. `NodeVersion` environment variable (explicit version override)
 2. `SideCar/Cache.json` latest cached version
-3. Node.js LTS version (fallback default)
+3. `Node.js` LTS version (fallback default)
 
 ---
 
-## Download System
+## Download System 📥
 
 The `Download` module handles archive retrieval and extraction:
 
@@ -142,7 +148,7 @@ The `Download` module handles archive retrieval and extraction:
 | Archive extraction   | `.tar.gz` decompression with platform prefix stripping        |
 | Binary placement     | Single binary extracted to `SideCar/{platform}/node`          |
 
-### Download Flow
+### Download Flow 📋
 
 ```
 1. HTTP GET to https://nodejs.org/dist/v{version}/SHASUMS256.txt
@@ -158,19 +164,19 @@ The `Download` module handles archive retrieval and extraction:
 
 ---
 
-## Spawn System
+## Spawn System 🚀
 
-The `Spawn` module manages starting Node.js sidecar processes with the correct
+The `Spawn` module manages starting `Node.js` sidecar processes with the correct
 binary and environment:
 
-| Feature            | Description                                                   |
-| ------------------ | ------------------------------------------------------------- |
-| Binary selection   | Uses cached Node.js binary for target platform                |
-| DNS override       | Configures process to use Mist's local DNS resolver           |
-| Environment setup  | Sets PATH, NODE_PATH, and Land-specific environment variables |
-| Process monitoring | Watches for process exit and captures output                  |
+| Feature            | Description                                                         |
+| ------------------ | ------------------------------------------------------------------- |
+| Binary selection   | Uses cached `Node.js` binary for target platform                    |
+| DNS override       | Configures process to use `Mist`'s local DNS resolver               |
+| Environment setup  | Sets `PATH`, `NODE_PATH`, and `Land`-specific environment variables |
+| Process monitoring | Watches for process exit and captures output                        |
 
-### Spawn Configuration
+### Spawn Configuration ⚙️
 
 ```rust
 let node_path = SideCar::resolve("22.0.0", "darwin-arm64")?;
@@ -191,7 +197,7 @@ let child = SideCar::spawn(
 
 ---
 
-## Supported Platforms
+## Supported Platforms 🖥️
 
 | Target Triple               | Platform String | Archive Pattern                       |
 | --------------------------- | --------------- | ------------------------------------- |
@@ -202,9 +208,9 @@ let child = SideCar::spawn(
 
 ---
 
-## Caching Strategy
+## Caching Strategy 💾
 
-SideCar maintains a JSON-based cache manifest at `SideCar/Cache.json`:
+`SideCar` maintains a JSON-based cache manifest at `SideCar/Cache.json`:
 
 ```json
 {
@@ -236,16 +242,16 @@ Cache entries are invalidated when:
 
 ---
 
-## Related Documentation
+## Related Documentation 📚
 
-- [Mountain](../Mountain/Documentation/GitHub/Architecture.md) - Main backend
-  (binary consumer)
-- [Mist](../Mist/Documentation/GitHub/Architecture.md) - DNS isolation for
-  spawned processes
-- [BuildPipeline](../../../Documentation/GitHub/BuildPipeline.md) - Build
-  pipeline integration
-- [RustInfrastructure](../../../Documentation/GitHub/RustInfrastructure.md) -
-  Rust backend components
+- [Mountain](https://github.com/CodeEditorLand/Mountain/tree/Current/Documentation/GitHub/Architecture.md) -
+  Main backend (binary consumer)
+- [Mist](https://github.com/CodeEditorLand/Mist/tree/Current/Documentation/GitHub/Architecture.md) -
+  DNS isolation for spawned processes
+- [BuildPipeline](https://github.com/CodeEditorLand/Land/tree/Current/Documentation/GitHub/BuildPipeline.md) -
+  Build pipeline integration
+- [RustInfrastructure](https://github.com/CodeEditorLand/Land/tree/Current/Documentation/GitHub/RustInfrastructure.md) -
+  `Rust` backend components
 
 ---
 
