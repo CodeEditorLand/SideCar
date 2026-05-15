@@ -5,7 +5,7 @@
 </td>
 <td align="left" valign="middle">
 <h3 align="left">
- ⚙️
+ &#x2001;⚙️
 </h3>
 </td>
 <td align="left" valign="middle">
@@ -39,7 +39,7 @@ Land
 
 # **SideCar**&#x2001;⚙️
 
-Pre-Compiled Native Dependencies for Land 🏞️
+Pre-Compiled Native Dependencies for Land &#x2001;🏞️
 
 > **VS Code ships one Node.js binary and detects the platform at runtime, with
 > fallback chains that fail in edge cases (Alpine Linux, custom glibc versions,
@@ -141,7 +141,7 @@ bundling into the final application installer.
 
 ---
 
-## `SideCar` in the Land Ecosystem&#x2001;⚙️ + 🏞️
+## `SideCar` in the Land Ecosystem&#x2001;⚙️ + &#x2001;🏞️
 
 | Component         | Role & Key Responsibilities                                           |
 | :---------------- | :-------------------------------------------------------------------- |
@@ -167,7 +167,7 @@ NodeJSOrg["nodejs.org"]:::external
 OtherRuntimes["Other Runtime Sources"]:::external
 end
 
-subgraph "SideCar ⚙️ (Download Tool)"
+subgraph "SideCar (Download Tool)&#x2001;⚙️"
 DownloadBin["Download Binary"]:::sidecar
 CacheJSON["Cache.json"]:::sidecar
 GitLFS[".gitattributes (LFS)"]:::sidecar
@@ -285,7 +285,7 @@ history of changes specific to **SideCar**.
 
 ---
 
-## Funding \& Acknowledgements&#x2001;🙏🏻
+## Funding & Acknowledgements&#x2001;🙏🏻
 
 **SideCar** is a core element of the **Land** ecosystem. This project is funded
 through [NGI0 Commons Fund](https://NLnet.NL/commonsfund), a fund established by
