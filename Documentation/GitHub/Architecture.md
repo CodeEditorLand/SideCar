@@ -19,6 +19,24 @@ runtime binaries for each target platform.
 
 ---
 
+```mermaid
+graph TB
+    subgraph SideCar["SideCar Vendored Runtime Manager"]
+        DL["Download.rs<br/>archive extraction<br/>platform targeting"]
+        SP["Spawn.rs<br/>Node process spawn<br/>DNS override"]
+        CACHE["Cache.json<br/>version-to-path map<br/>checksums"]
+
+        DL --> CACHE
+        CACHE --> SP
+    end
+
+    BUILD["Build.sh<br/>.env.Land"] -->|"NodeVersion / Platform"| DL
+    NODE["nodejs.org/dist"] -->|"download binary"| DL
+    DL -->|"cached path"| MOUNTAIN["Mountain<br/>ProcessManagement"]
+    MOUNTAIN -->|"spawn request"| SP
+    SP -->|"Node.js process"| COCOON["Cocoon<br/>Extension Host"]
+```
+
 ## Overview
 
 SideCar is a Rust library and binary that manages pre-compiled native dependency
