@@ -13,7 +13,7 @@
 </td>
 <td align="left" valign="middle">
 <h3 align="left">
-<a href="https://Editor.Land" target="_blank">
+<a href="https://Land.PlayForm.Cloud" target="_blank">
 <picture>
 <source media="(prefers-color-scheme: dark)" srcset="https://PlayForm.Cloud/Dark/Image/GitHub/Land.svg">
 <source media="(prefers-color-scheme: light)" srcset="https://PlayForm.Cloud/Image/GitHub/Land.svg">
@@ -24,7 +24,7 @@
 </td>
 <td align="left" valign="middle">
 <h3 align="left">
-<a href="https://Editor.Land" target="_blank">
+<a href="https://Land.PlayForm.Cloud" target="_blank">
 Land
 </a>
 </h3>
@@ -259,9 +259,9 @@ The SideCar directory is populated once during project setup:
 
 ## See Also
 
-- [SideCar Documentation](https://editor.land/Doc/sidecar)
-- [Architecture Overview](https://editor.land/Doc/architecture)
-- [Why Rust](https://editor.land/Doc/why-rust)
+- [SideCar Documentation](https://land.playform.cloud/Doc/sidecar)
+- [Architecture Overview](https://land.playform.cloud/Doc/architecture)
+- [Why Rust](https://land.playform.cloud/Doc/why-rust)
 - [Cocoon](https://github.com/CodeEditorLand/Cocoon)
 - [Mountain](https://github.com/CodeEditorLand/Mountain)
 
@@ -310,7 +310,7 @@ Commons Fund grant.
 	<tbody>
 		<tr>
 			<td align="left" valign="middle">
-				<a href="https://Editor.Land">
+				<a href="https://Land.PlayForm.Cloud">
 					<img width="60" src="https://raw.githubusercontent.com/CodeEditorLand/Asset/refs/heads/Current/Logo/Land.svg" alt="Land">
 				</a>
 			</td>
@@ -336,7 +336,7 @@ Commons Fund grant.
 ---
 
 **Project Maintainers**: Source Open
-([Source/Open@Editor.Land](mailto:Source/Open@Editor.Land)) |
+([Source/Open@Land.PlayForm.Cloud](mailto:Source/Open@Land.PlayForm.Cloud)) |
 [GitHub Repository](https://github.com/CodeEditorLand/SideCar) |
 [Report an Issue](https://github.com/CodeEditorLand/SideCar/issues) |
 [Security Policy](https://github.com/CodeEditorLand/SideCar/security/policy)
