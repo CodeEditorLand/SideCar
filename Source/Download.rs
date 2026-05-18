@@ -156,7 +156,7 @@ impl DownloadCache {
 		let mut Buffer = Vec::new();
 
 		// Create a formatter that uses a tab character for indentation.
-		let Formatter = serde_json::ser::PrettyFormatter::with_indent(b"\t");
+		let Formatter = serde_json::ser::PrettyFormatter::with_indent(b"	");
 
 		// Create a serializer with our custom formatter.
 		let mut Serializer = serde_json::Serializer::with_formatter(&mut Buffer, Formatter);
