@@ -158,36 +158,48 @@ dependencies.
 
 ```mermaid
 graph LR
-classDef sidecar fill:#f9f,stroke:#333,stroke-width:2px;
-classDef external fill:#ddd,stroke:#666,stroke-dasharray: 5 5;
-classDef storage fill:#9cf,stroke:#333,stroke-width:1px;
+    classDef sidecar  fill:#ffe0cc,stroke:#e67e22,stroke-width:2px,color:#4a1500;
+    classDef external fill:#ebebeb,stroke:#888,stroke-width:1px,stroke-dasharray:5 5,color:#333;
+    classDef storage  fill:#cce8ff,stroke:#2980b9,stroke-width:1px,color:#003050;
+    classDef mountain fill:#f0d0ff,stroke:#9b59b6,stroke-width:1px,color:#2c0050;
+    classDef cocoon   fill:#d0d8ff,stroke:#4a6fa5,stroke-width:1px,color:#001050;
 
-subgraph "External Sources"
-NodeJSOrg["nodejs.org"]:::external
-OtherRuntimes["Other Runtime Sources"]:::external
-end
+    subgraph SOURCES["External Sources"]
+        NodeJSOrg["nodejs.org\n(official distributions)"]:::external
+    end
 
-subgraph "SideCar (Download Tool)&#x2001;⚙️"
-DownloadBin["Download Binary"]:::sidecar
-CacheJSON["Cache.json"]:::sidecar
-GitLFS[".gitattributes (LFS)"]:::sidecar
+    subgraph SIDECAR["SideCar ⚙️ - Vendored Runtime Manager"]
+        direction TB
+        subgraph TOOL["Source/ - Download Tool (Rust binary)"]
+            DownloadBin["Download.rs\nfetch · verify · organise\nTokio parallel downloads"]:::sidecar
+            SpawnBin["Spawn.rs\nsidecar process spawning\nat Mountain runtime"]:::sidecar
+            CacheJSON["Cache.json\nversion tracking\navoid redundant downloads"]:::sidecar
+            GitLFS[".gitattributes\nGit LFS pointers\nfor large binaries"]:::sidecar
+            DownloadBin --> CacheJSON
+            DownloadBin --> GitLFS
+        end
+        subgraph LAYOUT["Directory Layout (by target triple)"]
+            Darwin_ARM["aarch64-apple-darwin/\nNode.js Apple Silicon"]:::storage
+            Darwin_x86["x86_64-apple-darwin/\nNode.js macOS Intel"]:::storage
+            Win_x86["x86_64-pc-windows-msvc/\nNode.js Windows x64"]:::storage
+            Linux_ARM["aarch64-unknown-linux-gnu/"]:::storage
+            Linux_x86["x86_64-unknown-linux-gnu/"]:::storage
+        end
+        BuildRS["build.rs\nbinary selection at build time\nstages correct triple into installer"]:::sidecar
 
-DownloadBin --> CacheJSON
-DownloadBin --> GitLFS
-end
+        DownloadBin --> LAYOUT
+        BuildRS --> LAYOUT
+    end
 
-subgraph "SideCar Directory Structure"
-TargetTriple["[target-triple]/"]:::storage
-RuntimeName["[SIDECAR_NAME]/"]:::storage
-Version["[version]/bin/"]:::storage
+    subgraph CONSUMERS["Consumers at Runtime"]
+        Mountain["Mountain ⛰️\nbuild.rs bundles chosen binary\ninto Tauri installer"]:::mountain
+        Cocoon["Cocoon 🦋\ngets correct Node.js binary\nno runtime detection needed"]:::cocoon
+    end
 
-TargetTriple --> RuntimeName
-RuntimeName --> Version
-end
-
-NodeJSOrg --> DownloadBin
-OtherRuntimes --> DownloadBin
-DownloadBin --> TargetTriple
+    NodeJSOrg --> DownloadBin
+    LAYOUT --> BuildRS
+    BuildRS --> Mountain
+    Mountain -- spawns with Spawn.rs --> Cocoon
 ```
 
 ---
