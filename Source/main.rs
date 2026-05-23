@@ -3,7 +3,6 @@
 //! This file serves as the main entry point for the SideCar application.
 //! It calls the main function from the library.
 
-#![allow(non_snake_case)]
 
 fn main() {
 	// [Boot] [Telemetry] Bring up shared dual-pipe (PostHog + OTLP) on a
