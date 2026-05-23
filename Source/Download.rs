@@ -1,5 +1,3 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
 //! ==============================================================================
 //! Universal Sidecar Vendor - Rust Edition
 //!
@@ -391,6 +389,7 @@ fn UpdateGitattributes(BaseDirectory:&Path) -> Result<()> {
 
 		let MissingRules:Vec<_> = GITATTRIBUTES_RULES
 			.iter()
+
 			// Filter out blank lines and comments from the check
 			.filter(|rule| !rule.is_empty() && !rule.starts_with('#'))
 			.filter(|rule| !Content.contains(*rule))
@@ -790,7 +789,6 @@ pub async fn Fn() -> Result<()> {
 }
 
 /// Main executable function.
-#[allow(unused)]
 fn main() {
 	// We use a block here to handle the Result from Fn.
 	if let Err(Error) = Fn() {

@@ -1,7 +1,7 @@
 use std::fs;
 
-#[allow(unused_imports)]
 use tauri::{AppHandle, Manager};
+
 use Mist::dns_port;
 
 const DNS_OVERRIDE:&str = include_str!("../../../Resource/dns-override.js");
@@ -42,8 +42,8 @@ const DNS_OVERRIDE:&str = include_str!("../../../Resource/dns-override.js");
 /// 	Ok(())
 /// }
 /// ```
-#[allow(dead_code)]
 pub fn spawn_node_sidecar(app:&AppHandle, sidecar_name:&str) -> anyhow::Result<()> {
+
 	// Ensure app data directory exists
 	let data_dir = app.path().app_data_dir()?;
 
