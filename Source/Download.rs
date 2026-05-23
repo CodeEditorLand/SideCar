@@ -1,5 +1,4 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-#![allow(non_camel_case_types, non_upper_case_globals)]
 
 //! ==============================================================================
 //! Universal Sidecar Vendor - Rust Edition

@@ -3,7 +3,6 @@
 //! This file serves as the main entry point for the SideCar application.
 //! It calls the main function from the library.
 
-
 fn main() {
 	// [Boot] [Telemetry] Bring up shared dual-pipe (PostHog + OTLP) on a
 	// short-lived tokio runtime - SideCar's main is sync, but Common's
