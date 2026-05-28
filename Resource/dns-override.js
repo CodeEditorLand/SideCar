@@ -10,6 +10,7 @@ const [host, portStr] = (process.env.Resolve || "127.0.0.1:5380").split(":");
 const servers = [`${host}:${portStr}`];
 
 dns.setServers(servers); // affects net.lookup global path
+
 dns.promises.setDefaultResultOrder("ipv4first");
 
 // Also override the node:dns/promises Resolver class default
