@@ -26,7 +26,6 @@
 //! ## Modules
 //!
 //! - [`Download`]: Platform-aware binary fetching and checksum verification
-//! - [`Spawn`]: Tauri sidecar process launch and lifecycle management
 
 /// Main executable function.
 /// DEPENDENCY: Move this function to main.rs in a future refactor
@@ -41,6 +40,5 @@ pub fn main() {
 
 pub mod Download;
 
-pub mod Spawn;
 
 use log::error;

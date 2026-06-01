@@ -84,7 +84,7 @@ SideCar/
 ├── Source/
 │   ├── Download.rs              # Main download binary: fetches, verifies, and organizes platform binaries.
 │   ├── Library.rs               # Module declarations and shared utilities.
-│   └── Spawn.rs                 # Sidecar process spawning logic.
+│   └── main.rs                  # Binary entry point for the download tool.
 ├── build.rs                     # Build script: binary selection and staging for the final installer.
 ├── Cargo.toml
 ├── Cache.json                   # Download cache metadata (tracks fetched versions per platform).
@@ -178,7 +178,6 @@ graph LR
         direction TB
         subgraph TOOL["Source/ - Download Tool (Rust binary)"]
             DownloadBin["Download.rs\nfetch · verify · organise\nTokio parallel downloads"]:::sidecar
-            SpawnBin["Spawn.rs\nsidecar process spawning\nat Mountain runtime"]:::sidecar
             CacheJSON["Cache.json\nversion tracking\navoid redundant downloads"]:::sidecar
             GitLFS[".gitattributes\nGit LFS pointers\nfor large binaries"]:::sidecar
             DownloadBin --> CacheJSON

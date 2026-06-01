@@ -18,7 +18,7 @@ launch sidecars from the vendored binary store.
 graph TB
     subgraph "SideCar - Binary Distribution"
         DownloadBin["Source/Download.rs\nDownload binary entry"]
-        SpawnBin["Source/Spawn.rs\nSpawn helper binary"]
+
         LibraryRS["Source/Library.rs\nShared library"]
         CacheJSON["Cache.json\nVersion tracking"]
         GitAttributes[".gitattributes\nGit LFS configuration"]

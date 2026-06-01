@@ -16,10 +16,9 @@ This document describes `SideCar`, the vendored runtime binary manager for
 2. [Architecture](#architecture)
 3. [Binary Resolution](#binary-resolution)
 4. [Download System](#download-system)
-5. [Spawn System](#spawn-system)
-6. [Supported Platforms](#supported-platforms)
-7. [Caching Strategy](#caching-strategy)
-8. [Related Documentation](#related-documentation)
+5. [Supported Platforms](#supported-platforms)
+6. [Caching Strategy](#caching-strategy)
+7. [Related Documentation](#related-documentation)
 
 ---
 
@@ -27,18 +26,15 @@ This document describes `SideCar`, the vendored runtime binary manager for
 graph TB
     subgraph SideCar["SideCar Vendored Runtime Manager"]
         DL["Download.rs<br/>archive extraction<br/>platform targeting"]
-        SP["Spawn.rs<br/>Node process spawn<br/>DNS override"]
         CACHE["Cache.json<br/>version-to-path map<br/>checksums"]
 
         DL --> CACHE
-        CACHE --> SP
     end
 
     BUILD["Build.sh<br/>.env.Land"] -->|"NodeVersion / Platform"| DL
     NODE["nodejs.org/dist"] -->|"download binary"| DL
     DL -->|"cached path"| MOUNTAIN["Mountain<br/>ProcessManagement"]
-    MOUNTAIN -->|"spawn request"| SP
-    SP -->|"Node.js process"| COCOON["Cocoon<br/>Extension Host"]
+    MOUNTAIN -->|"sidecar runtime"| COCOON["Cocoon<br/>Extension Host"]
 ```
 
 ## Overview 📋
@@ -66,12 +62,12 @@ dependency binaries for `Land`:
 +---------------------------------------------------------------+
 |                        SideCar                                 |
 |                                                                |
-|  +----------------------+  +----------------------+            |
-|  | Download.rs          |  | Spawn.rs             |            |
-|  | - Archive extraction |  | - Node process spawn |            |
-|  | - Platform targeting |  | - DNS override       |            |
-|  | - Version resolution |  | - Environment setup  |            |
-|  +----------------------+  +----------------------+            |
+|  +----------------------+                                      |
+|  | Download.rs          |                                      |
+|  | - Archive extraction |                                      |
+|  | - Platform targeting |                                      |
+|  | - Version resolution |                                      |
+|  +----------------------+                                      |
 |                                                                |
 |  +----------------------+                                      |
 |  | Cache.json           |                                      |
@@ -82,14 +78,13 @@ dependency binaries for `Land`:
 +---------------------------------------------------------------+
 ```
 
-### Module Map 🗺️
+### Module Map 🗺️
 
-| Path                 | Purpose                                                 |
-| -------------------- | ------------------------------------------------------- |
+| Path | Purpose |
+| :--- | :--- |
 | `Source/Download.rs` | Binary download, archive extraction, platform targeting |
-| `Source/Spawn.rs`    | `Node.js` sidecar process spawning with DNS override    |
-| `Source/Library.rs`  | Library root                                            |
-| `Source/main.rs`     | Binary entry point for standalone operation             |
+| `Source/Library.rs` | Library root |
+| `Source/main.rs` | Binary entry point for standalone operation |
 
 ---
 
@@ -164,40 +159,7 @@ The `Download` module handles archive retrieval and extraction:
 
 ---
 
-## Spawn System 🚀
-
-The `Spawn` module manages starting `Node.js` sidecar processes with the correct
-binary and environment:
-
-| Feature            | Description                                                         |
-| ------------------ | ------------------------------------------------------------------- |
-| Binary selection   | Uses cached `Node.js` binary for target platform                    |
-| DNS override       | Configures process to use `Mist`'s local DNS resolver               |
-| Environment setup  | Sets `PATH`, `NODE_PATH`, and `Land`-specific environment variables |
-| Process monitoring | Watches for process exit and captures output                        |
-
-### Spawn Configuration ⚙️
-
-```rust
-let node_path = SideCar::resolve("22.0.0", "darwin-arm64")?;
-let child = SideCar::spawn(
-    &node_path,
-    &["bootstrap-fork.js"],
-    SpawnConfig {
-        env: vec![
-            ("VINE_PORT", "50051"),
-            ("MIST_PORT", "5380"),
-            ("NODE_PATH", "/usr/local/lib/node_modules"),
-        ],
-        dns_override: Some("127.0.0.1:5380"),
-        cwd: Some("/Applications/Land.app/Contents/Resources"),
-    },
-)?;
-```
-
----
-
-## Supported Platforms 🖥️
+## Supported Platforms
 
 | Target Triple               | Platform String | Archive Pattern                       |
 | --------------------------- | --------------- | ------------------------------------- |
