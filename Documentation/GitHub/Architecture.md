@@ -80,11 +80,11 @@ dependency binaries for `Land`:
 
 ### Module Map 🗺️
 
-| Path | Purpose |
-| :--- | :--- |
+| Path                 | Purpose                                                 |
+| :------------------- | :------------------------------------------------------ |
 | `Source/Download.rs` | Binary download, archive extraction, platform targeting |
-| `Source/Library.rs` | Library root |
-| `Source/main.rs` | Binary entry point for standalone operation |
+| `Source/Library.rs`  | Library root                                            |
+| `Source/main.rs`     | Binary entry point for standalone operation             |
 
 ---
 

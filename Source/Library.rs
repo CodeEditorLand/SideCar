@@ -40,5 +40,4 @@ pub fn main() {
 
 pub mod Download;
 
-
 use log::error;
