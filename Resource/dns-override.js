@@ -26,6 +26,6 @@ dns.lookup = (hostname, options, cb) => {
 
 	const opts = typeof options === "object" ? options : {};
 
-	// .land.playform.cloud always force-resolves via Hickory (already configured above)
+	// .editor.land always force-resolves via Hickory (already configured above)
 	origLookup(hostname, { ...opts, verbatim: true }, callback);
 };
