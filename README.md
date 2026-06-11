@@ -267,9 +267,9 @@ The SideCar directory is populated once during project setup:
 
 ## See Also
 
-- [SideCar Documentation](https://editor.land/Doc/sidecar)
-- [Architecture Overview](https://editor.land/Doc/architecture)
-- [Why Rust](https://editor.land/Doc/why-rust)
+- [SideCar Documentation](https://Editor.Land/Doc/sidecar)
+- [Architecture Overview](https://Editor.Land/Doc/architecture)
+- [Why Rust](https://Editor.Land/Doc/why-rust)
 - [Cocoon](https://github.com/CodeEditorLand/Cocoon)
 - [Mountain](https://github.com/CodeEditorLand/Mountain)
 
