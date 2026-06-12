@@ -53,7 +53,7 @@ _"The right binary, for the right platform, at the right time."_
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://github.com/CodeEditorLand/SideCar/blob/Current/LICENSE)
 [<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/)&#x2001;[![Crates.io](https://img.shields.io/crates/v/sidecar.svg)](https://crates.io/crates/sidecar)
 [<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/)&#x2001;[![Rust Version](https://img.shields.io/badge/Rust-1.75+-orange.svg)](https://www.rust-lang.org/)
-[<img src="https://editor.land/Image/Node.js.svg" width="14" alt="Node.js" />](https://nodejs.org/)&#x2001;[![Node.js](https://img.shields.io/badge/Node.js-16+-339933.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-16+-339933.svg)](https://nodejs.org/)
 
 **[Rust API Documentation](https://rust.documentation.sidecar.editor.land/)**&#x2001;📖
 
