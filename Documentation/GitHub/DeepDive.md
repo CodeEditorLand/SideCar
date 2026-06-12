@@ -1,6 +1,6 @@
 # SideCar - Deep Dive
 
-This document provides the technical foundation for the SideCar binary
+SideCar provides the technical foundation binary
 distribution layer within the Land ecosystem. **SideCar** manages pre-compiled,
 platform-specific runtime binaries (primarily Node.js) so that the Land editor
 can bundle vendored runtimes without requiring users to install them separately.
