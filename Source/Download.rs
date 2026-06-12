@@ -8,34 +8,34 @@
 	unused_assignments
 )]
 
-//! ==============================================================================
-//! Universal Sidecar Vendor - Rust Edition
+//! # Download: Universal Sidecar Vendor
 //!
-//! This program automates downloading and organizing full distributions of
-//! various sidecar runtimes (like Node.js) for a Tauri application. It is a
-//! Rust rewrite of the original shell script, enhanced with modern features.
+//! Automates downloading and organizing full distributions of various sidecar
+//! runtimes (such as Node.js) for a Tauri application. A Rust rewrite of the
+//! original shell script with modern concurrency support.
 //!
-//! Key Features:
-//!   - Asynchronous, Concurrent Downloads: Leverages Tokio to download multiple
-//!     binaries in parallel, significantly speeding up the process.
-//!   - Intelligent Caching: Maintains a `Cache.json` file to track downloaded
-//!     versions. It automatically detects if a newer patch version is available
-//!     for a requested major version and updates the binary.
-//!   - Git LFS Management: Automatically creates or updates the
-//!     `.gitattributes` file to ensure large binaries are tracked by Git LFS.
-//!   - Extensible Design: Easily configured to support new sidecars, versions,
-//!     and platforms.
-//!   - Robust Error Handling: Uses `anyhow` for clear and concise error
-//!     reporting.
-//!   - Preserved File Structure: The final output directory structure remains
-//!     identical to the original script (`Architecture/SidecarName/Version`).
+//! ## Features
 //!
-//! ==============================================================================
+//! - **Asynchronous, concurrent downloads** — Leverages Tokio to download
+//!   multiple binaries in parallel, significantly speeding up the process.
+//! - **Intelligent caching** — Maintains a `Cache.json` file to track downloaded
+//!   versions. Automatically detects if a newer patch version is available for a
+//!   requested major version and updates the binary.
+//! - **Git LFS management** — Automatically creates or updates the
+//!   `.gitattributes` file to ensure large binaries are tracked by Git LFS.
+//! - **Extensible design** — Easily configured to support new sidecars, versions,
+//!   and platforms.
+//! - **Robust error handling** — Uses `anyhow` for clear and concise error
+//!   reporting.
+//! - **Preserved file structure** — The final output directory structure remains
+//!   identical to the original script (`Architecture/SidecarName/Version`).
 
 // --- Type Definitions and Structs ---
 
-/// Represents a single platform target for which binaries will be downloaded.
-/// This struct holds all the necessary identifiers for a given platform.
+/// Platform identifiers for a single target architecture.
+///
+/// Holds all identifiers needed to construct download URLs and target paths
+/// for a given platform.
 #[derive(Clone, Debug)]
 struct PlatformTarget {
 	/// The identifier used in the download URL (e.g., "win-x64",
@@ -59,16 +59,18 @@ enum ArchiveType {
 	TarGz,
 }
 
-/// Represents a specific version of Node.js as returned by the official index.
-/// Used for deserializing the JSON response from `nodejs.org`.
+/// A single Node.js version entry from the official `nodejs.org` index.
+///
+/// Deserialized from the JSON response returned by the versions endpoint.
 #[derive(Deserialize, Debug)]
 struct NodeVersionInfo {
 	version:String,
 }
 
-/// Contains all the necessary information to perform a single download and
-/// installation task. An instance of this struct is created for each binary
-/// that needs to be downloaded.
+/// Parameters for a single download-and-install operation.
+///
+/// Created for each binary that needs downloading. Provides all paths,
+/// identifiers, and archive metadata needed by [`ProcessDownloadTask`].
 #[derive(Clone, Debug)]
 struct DownloadTask {
 	/// The name of the sidecar (e.g., "NODE").
@@ -99,10 +101,10 @@ struct DownloadTask {
 	TauriTargetTriple:String,
 }
 
-/// Represents the structure of the `Cache.json` file.
-/// It uses a HashMap to map a unique key (representing a specific
-/// sidecar/version/platform) to the full version string that was last
-/// downloaded.
+/// Schema for the `Cache.json` file.
+///
+/// Maps a composite key (sidecar/version/platform) to the full version string
+/// that was last downloaded successfully.
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct DownloadCache {
 	/// The core data structure for the cache.
@@ -479,8 +481,9 @@ async fn DownloadFile(Client:&Client, URL:&str, DestinationPath:&Path) -> Result
 	Ok(())
 }
 
-/// Extracts the contents of a downloaded archive to a target directory.
-/// This function now performs a full extraction to ensure a complete
+/// Extracts a downloaded archive into a target directory.
+///
+/// Performs a full extraction of zip or tar.gz archives to ensure a complete
 /// distribution.
 fn ExtractArchive(ArchiveType:&ArchiveType, ArchivePath:&Path, ExtractionDirectory:&Path) -> Result<()> {
 	info!("Performing a full extraction of the archive...");
@@ -508,8 +511,9 @@ fn ExtractArchive(ArchiveType:&ArchiveType, ArchivePath:&Path, ExtractionDirecto
 	Ok(())
 }
 
-/// The main asynchronous function for processing a single download task.
-/// This function is designed to be run concurrently for multiple tasks.
+/// Processes a single download task: downloads, extracts, installs, and caches.
+///
+/// Designed to run concurrently for multiple tasks via Tokio tasks.
 async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<DownloadCache>>) -> Result<()> {
 	// Create the temporary directory inside the designated "Temporary" subfolder.
 	let TempDirectory = Builder::new()
@@ -597,8 +601,11 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 /// Reads the log level from the [`LogEnv`] environment variable (defaults to
 /// `"info"`), and configures [`env_logger`] with a custom format that prefixes
 /// each line with a coloured `[Download]` tag and the log level.
-///
 /// Must be called once at process start before any logging macros.
+///
+/// ## Panics
+///
+/// Panics if the logger has already been initialised elsewhere in the process.
 pub fn Logger() {
 	let LevelText = env::var(LogEnv).unwrap_or_else(|_| "info".to_string());
 
@@ -639,12 +646,16 @@ pub fn Logger() {
 /// 7. Extracts, verifies, and places each binary in the correct output
 ///    directory, cleaning up temporary files on completion.
 ///
-/// # Errors
+/// ## Returns
 ///
-/// Returns an [`anyhow::Error`] if any step in the pipeline fails - network
+/// `Ok(())` on success, or an [`anyhow::Error`] describing the failure.
+///
+/// ## Errors
+///
+/// Returns an [`anyhow::Error`] if any step in the pipeline fails — network
 /// errors, checksum mismatches, filesystem issues, etc.
 ///
-/// # Panics
+/// ## Panics
 ///
 /// Panics if the Tokio runtime fails to initialise (the `#[tokio::main]`
 /// attribute handles runtime creation).
@@ -830,7 +841,10 @@ pub async fn Fn() -> Result<()> {
 	Ok(())
 }
 
-/// Main executable function.
+/// Standalone binary entry point.
+///
+/// Invokes the [`Fn`] vendoring pipeline, logging any fatal error and exiting
+/// with status 1 on failure.
 fn main() {
 	// We use a block here to handle the Result from Fn.
 	if let Err(Error) = Fn() {

@@ -10,8 +10,8 @@
 
 //! SideCar binary entry point
 //!
-//! This file serves as the main entry point for the SideCar application.
-//! It calls the main function from the library.
+//! Application entry point that initialises telemetry and delegates to the
+//! library's [`main`] function.
 
 fn main() {
 	// [Boot] [Telemetry] Bring up shared dual-pipe (PostHog + OTLP) on a

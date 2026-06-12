@@ -41,6 +41,11 @@
 /// matrix, fetching sidecar definitions, downloading and verifying each binary,
 /// updating the cache, and managing `.gitattributes` for Git LFS tracking.
 ///
+/// ## Panics
+///
+/// Exits the process with status 1 if the vendoring pipeline encounters a
+/// fatal error.
+///
 /// DEPENDENCY: Move this function to main.rs in a future refactor
 #[allow(dead_code)]
 pub fn main() {
@@ -53,9 +58,9 @@ pub fn main() {
 
 /// Platform-aware binary download and verification module.
 ///
-/// This module handles downloading Node.js binaries for the current OS/arch,
-/// verifying checksums, managing a download cache (`Cache.json`), and
-/// maintaining `.gitattributes` for Git LFS tracking.
+/// Downloads Node.js binaries for the current OS/arch, verifies checksums,
+/// manages a download cache (`Cache.json`), and maintains `.gitattributes`
+/// for Git LFS tracking.
 pub mod Download;
 
 use log::error;
