@@ -18,17 +18,18 @@
 //!
 //! - **Asynchronous, concurrent downloads** — Leverages Tokio to download
 //!   multiple binaries in parallel, significantly speeding up the process.
-//! - **Intelligent caching** — Maintains a `Cache.json` file to track downloaded
-//!   versions. Automatically detects if a newer patch version is available for a
-//!   requested major version and updates the binary.
+//! - **Intelligent caching** — Maintains a `Cache.json` file to track
+//!   downloaded versions. Automatically detects if a newer patch version is
+//!   available for a requested major version and updates the binary.
 //! - **Git LFS management** — Automatically creates or updates the
 //!   `.gitattributes` file to ensure large binaries are tracked by Git LFS.
-//! - **Extensible design** — Easily configured to support new sidecars, versions,
-//!   and platforms.
+//! - **Extensible design** — Easily configured to support new sidecars,
+//!   versions, and platforms.
 //! - **Robust error handling** — Uses `anyhow` for clear and concise error
 //!   reporting.
-//! - **Preserved file structure** — The final output directory structure remains
-//!   identical to the original script (`Architecture/SidecarName/Version`).
+//! - **Preserved file structure** — The final output directory structure
+//!   remains identical to the original script
+//!   (`Architecture/SidecarName/Version`).
 
 // --- Type Definitions and Structs ---
 

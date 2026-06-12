@@ -22,6 +22,7 @@ r.setServers(servers);
 const origLookup = dns.lookup.bind(dns);
 
 dns.lookup = (hostname, options, cb) => {
+
 	const callback = typeof options === "function" ? options : cb;
 
 	const opts = typeof options === "object" ? options : {};
