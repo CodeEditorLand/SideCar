@@ -24,7 +24,7 @@
 				<picture>
 					<source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/stars/CodeEditorLand/SideCar?style=flat&label=Star&logo=github&color=black&labelColor=black&logoColor=white&logoWidth=0" />
 					<source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/github/stars/CodeEditorLand/SideCar?style=flat&label=Star&logo=github&color=white&labelColor=white&logoColor=black&logoWidth=0" />
-					<img src="https://img.shields.io/github/stars/CodeEditorLand/SideCar?style=flat&label=Star&logo=github&color=black&labelColor=black&logoColor=white&logoWidth=0" alt="Star" />
+					<img src="https://img.shields.io/github/stars/CodeEditorLand/SideCar?style=flat&label=Star&logo=github&color=black&labelColor=black&logoColor=white&logoWidth=0" alt="Star" title="Star" />
 				</picture>
 			</a>
 			<br />
@@ -51,7 +51,7 @@ Prebuilt `Node.js` Sidecar for Land&#x2001;🏞️
 _"The right binary, for the right platform, at the right time."_
 
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://github.com/CodeEditorLand/SideCar/blob/Current/LICENSE)
-[<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/)&#x2001;[![Crates.io](https://img.shields.io/crates/v/SideCar.svg)](https://crates.io/crates/SideCar)
+[<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/)&#x2001;[![Crates.io](https://img.shields.io/crates/v/sidecar.svg)](https://crates.io/crates/sidecar)
 [<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/)&#x2001;[![Rust Version](https://img.shields.io/badge/Rust-1.75+-orange.svg)](https://www.rust-lang.org/)
 [<img src="https://editor.land/Image/Node.js.svg" width="14" alt="Node.js" />](https://nodejs.org/)&#x2001;[![Node.js](https://img.shields.io/badge/Node.js-16+-339933.svg)](https://nodejs.org/)
 
@@ -287,6 +287,19 @@ The SideCar directory is populated once during project setup:
 > not be committed directly to version control** — use `Git LFS` via the
 > auto-managed `.gitattributes` file. The `Download` tool should be run once to
 > vendor the dependencies as part of the initial project setup.
+
+---
+
+## Security&#x2001;🔒
+
+SideCar enforces binary integrity at multiple layers:
+
+| Layer | Mechanism |
+|-------|-----------|
+| **Source of Truth** | Binaries are fetched exclusively from `nodejs.org` official distribution feeds — no third-party mirrors |
+| **Checksum Verification** | `Download` Rust binary validates SHA-256 checksums against `nodejs.org` published hashes before extraction |
+| **Build-Time Selection** | `Mountain`'s `build.rs` selects the exact binary for the target triple at compile time — runtime substitution is not possible |
+| **Git LFS Integrity** | Large binaries tracked through `Git LFS` with auto-managed `.gitattributes` pointer rules |
 
 ---
 
