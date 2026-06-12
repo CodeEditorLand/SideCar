@@ -330,7 +330,10 @@ fn GetSidecarsToFetch() -> HashMap<String, Vec<String>> {
 
 // --- Helper Functions ---
 
-/// Environment variable for setting the log level.
+/// Environment variable that controls the log level filter.
+///
+/// Reads the `RUST_LOG` environment variable. Defaults to `"info"` if unset.
+/// Supported levels: `error`, `warn`, `info`, `debug`, `trace`.
 pub const LogEnv:&str = "RUST_LOG";
 
 /// Manages the `.gitattributes` file to ensure binaries are tracked by Git LFS.
@@ -589,7 +592,13 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 	Ok(())
 }
 
-/// Sets up the global logger for the application.
+/// Initialises the coloured terminal logger for the application.
+///
+/// Reads the log level from the [`LogEnv`] environment variable (defaults to
+/// `"info"`), and configures [`env_logger`] with a custom format that prefixes
+/// each line with a coloured `[Download]` tag and the log level.
+///
+/// Must be called once at process start before any logging macros.
 pub fn Logger() {
 	let LevelText = env::var(LogEnv).unwrap_or_else(|_| "info".to_string());
 
@@ -616,6 +625,29 @@ pub fn Logger() {
 		.init();
 }
 
+/// Main entry point for the sidecar vendoring pipeline.
+///
+/// Initialises telemetry via [`CommonLibrary::Telemetry`], sets up the logger,
+/// then orchestrates the full download workflow:
+///
+/// 1. Resolves the base sidecar directory from configuration.
+/// 2. Updates `.gitattributes` for Git LFS tracking.
+/// 3. Creates a temporary downloads directory.
+/// 4. Loads or initialises the download cache (`Cache.json`).
+/// 5. Fetches the platform matrix and sidecar definitions.
+/// 6. Downloads all required binaries concurrently.
+/// 7. Extracts, verifies, and places each binary in the correct output
+///    directory, cleaning up temporary files on completion.
+///
+/// # Errors
+///
+/// Returns an [`anyhow::Error`] if any step in the pipeline fails - network
+/// errors, checksum mismatches, filesystem issues, etc.
+///
+/// # Panics
+///
+/// Panics if the Tokio runtime fails to initialise (the `#[tokio::main]`
+/// attribute handles runtime creation).
 #[tokio::main]
 pub async fn Fn() -> Result<()> {
 	// [Boot] [Telemetry] Bring up shared dual-pipe (PostHog + OTLP).
