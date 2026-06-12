@@ -1,4 +1,4 @@
-# **SideCar** 🚗
+# **SideCar**&#x2001;🚗
 
 <table>
 	<tr>
