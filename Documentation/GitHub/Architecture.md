@@ -9,15 +9,13 @@
 				</picture>
 			</h3>
 		</td>
-		<td colspan="3" valign="top">
-			<h3 align="center"> SideCar 🚗</h3>
-		</td>
+		<td colspan="3" valign="top"><h3 align="center">SideCar&#x2001;🚗</h3></td>
 	</tr>
 </table>
 
 ---
 
-# **SideCar** 🚗 Architecture
+# **SideCar**&#x2001;🚗&#x2001;Architecture
 
 `SideCar` is the vendored runtime binary manager for `Land`:
 
@@ -55,7 +53,7 @@ graph TB
     MOUNTAIN -->|"sidecar runtime"| COCOON["Cocoon<br/>Extension Host"]
 ```
 
-## Overview 📋
+## Overview&#x2001;📋
 
 `SideCar` is a `Rust` library and binary that manages pre-compiled native
 dependency binaries for `Land`:
@@ -74,7 +72,7 @@ dependency binaries for `Land`:
 
 ---
 
-## Architecture 🏗️
+## Architecture&#x2001;🏗️
 
 ```
 +---------------------------------------------------------------+
@@ -106,7 +104,7 @@ dependency binaries for `Land`:
 
 ---
 
-## Binary Resolution 🔍
+## Binary Resolution&#x2001;🔍
 
 The resolution process selects the correct `Node.js` binary for the target
 platform:
@@ -141,7 +139,7 @@ SideCar::resolve()
 Return resolved binary path to Mountain
 ```
 
-### Version Resolution Priority 📊
+### Version Resolution Priority&#x2001;📊
 
 1. `NodeVersion` environment variable (explicit version override)
 2. `SideCar/Cache.json` latest cached version
@@ -149,7 +147,7 @@ Return resolved binary path to Mountain
 
 ---
 
-## Download System 📥
+## Download System&#x2001;📥
 
 The `Download` module handles archive retrieval and extraction:
 
@@ -161,7 +159,7 @@ The `Download` module handles archive retrieval and extraction:
 | Archive extraction   | `.tar.gz` decompression with platform prefix stripping        |
 | Binary placement     | Single binary extracted to `SideCar/{platform}/node`          |
 
-### Download Flow 📋
+### Download Flow&#x2001;📋
 
 ```
 1. HTTP GET to https://nodejs.org/dist/v{version}/SHASUMS256.txt
@@ -188,7 +186,7 @@ The `Download` module handles archive retrieval and extraction:
 
 ---
 
-## Caching Strategy 💾
+## Caching Strategy&#x2001;💾
 
 `SideCar` maintains a JSON-based cache manifest at `SideCar/Cache.json`:
 
@@ -222,7 +220,7 @@ Cache entries are invalidated when:
 
 ---
 
-## Related Documentation 📚
+## Related Documentation&#x2001;📚
 
 - [Mountain](https://github.com/CodeEditorLand/Mountain/tree/Current/Documentation/GitHub/Architecture.md) -
   Main backend (binary consumer)
