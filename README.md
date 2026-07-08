@@ -43,16 +43,16 @@ Prebuilt `Node.js` Sidecar for Land&#x2001;🏞️
 
 > **VS Code ships one `Node.js` binary and detects the platform at runtime, with
 > fallback chains that fail in edge cases - Alpine Linux, custom glibc versions,
-> ARM configurations. SideCar&#x2001;🚃&#x2001;packages the exact `Node.js`
+> ARM configurations. SideCar&#x2001;🚃 packages the exact `Node.js`
 > binary for each target triple at compile time, so
-> `Cocoon`&#x2001;🦋&#x2001;always gets the binary that matches the host. No
+> `Cocoon`&#x2001;🦋 always gets the binary that matches the host. No
 > runtime detection, no fallback chains, no surprises.**
 
 _"The right binary, for the right platform, at the right time."_
 
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://github.com/CodeEditorLand/SideCar/blob/Current/LICENSE)
-[<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/)&#x2001;[![Crates.io](https://img.shields.io/crates/v/sidecar.svg)](https://crates.io/crates/sidecar)
-[<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/)&#x2001;[![Rust Version](https://img.shields.io/badge/Rust-1.75+-orange.svg)](https://www.rust-lang.org/)
+[<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/) [![Crates.io](https://img.shields.io/crates/v/sidecar.svg)](https://crates.io/crates/sidecar)
+[<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/) [![Rust Version](https://img.shields.io/badge/Rust-1.75+-orange.svg)](https://www.rust-lang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-16+-339933.svg)](https://nodejs.org/)
 
 **[Rust API Documentation](https://rust.documentation.sidecar.editor.land/)**&#x2001;📖
@@ -61,10 +61,10 @@ _"The right binary, for the right platform, at the right time."_
 
 ## Overview
 
-**SideCar**&#x2001;🚃&#x2001;is the prebuilt `Node.js` sidecar repository for
-the **Land**&#x2001;🏞️&#x2001;Code Editor. It packages platform-specific
+**SideCar**&#x2001;🚃 is the prebuilt `Node.js` sidecar repository for
+the **Land**&#x2001;🏞️ Code Editor. It packages platform-specific
 `Node.js` binaries organized by target triple so that
-`Cocoon`&#x2001;🦋&#x2001;- Land's `Node.js` extension host - receives the exact
+`Cocoon`&#x2001;🦋 - Land's `Node.js` extension host - receives the exact
 runtime binary that matches the target platform. SideCar replaces runtime
 detection and fallback chains with a single deterministic lookup at build time.
 
@@ -91,7 +91,7 @@ the correct binary per target triple at compile time.
 **Deterministic Binary Selection** - Binaries are organized by target triple
 (`aarch64-apple-darwin/`, `x86_64-unknown-linux-gnu/`, etc.).
 `Mountain`'s&#x2001;⛰️ `build.rs` selects the correct binary at compile time -
-`Cocoon`&#x2001;🦋&#x2001;receives a path, never a guess.
+`Cocoon`&#x2001;🦋 receives a path, never a guess.
 
 **Concurrent Downloads** - The `Download` Rust binary uses `Tokio` for parallel
 fetching of multiple runtime binaries from `nodejs.org`, maximizing throughput
@@ -120,13 +120,13 @@ repository lean while binaries remain accessible.
 | Principle                  | Description                                                                                                                                                                               | Key Components                                           |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
 | **Deterministic Delivery** | Package the exact `Node.js` binary per target triple at compile time. No runtime detection, no fallback chains, no surprises.                                                             | `build.rs`, target-triple directories, `Cache.json`      |
-| **Build-Time Integration** | `Mountain`'s&#x2001;⛰️&#x2001;build system selects the correct binary from SideCar during the Tauri installer build. `Cocoon`&#x2001;🦋&#x2001;receives a path, never a runtime decision. | `build.rs` binary selection logic, `Source/Download.rs`  |
+| **Build-Time Integration** | `Mountain`'s&#x2001;⛰️ build system selects the correct binary from SideCar during the Tauri installer build. `Cocoon`&#x2001;🦋 receives a path, never a runtime decision.                | `build.rs` binary selection logic, `Source/Download.rs`  |
 | **Automated Sourcing**     | Fetch, verify, and cache official `Node.js` distributions with parallel `Tokio` downloads and intelligent version resolution.                                                             | `Source/Download.rs`, `Cache.json`, `.gitattributes`     |
-| **Platform Completeness**  | Cover every target triple Land&#x2001;🏞️&#x2001;ships on - no edge case left to a runtime fallback.                                                                                       | Target-triple directory layout, versioned subdirectories |
+| **Platform Completeness**  | Cover every target triple Land&#x2001;🏞️ ships on - no edge case left to a runtime fallback.                                                                                              | Target-triple directory layout, versioned subdirectories |
 
 ---
 
-## System Architecture&#x2001;
+## System Architecture
 
 ```mermaid
 graph LR
@@ -234,14 +234,14 @@ Element/SideCar/
 
 SideCar vendored binaries are the compile-time source of truth for
 `Cocoon`'s&#x2001;🦋 `Node.js` runtime. During the application build,
-`Mountain`'s&#x2001;⛰️&#x2001;`build.rs` orchestrator selects the correct binary
-from SideCar based on the target triple. `Cocoon`&#x2001;🦋&#x2001;receives a
+`Mountain`'s&#x2001;⛰️ `build.rs` orchestrator selects the correct binary
+from SideCar based on the target triple. `Cocoon`&#x2001;🦋 receives a
 deterministic path - no runtime detection, no fallback chains, no
 platform-specific edge cases.
 
 | Consumer               | Language                   | How SideCar Delivers                              | Integration Point                                                                                |
 | ---------------------- | -------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Cocoon**&#x2001;🦋   | `TypeScript`, `JavaScript` | Platform-matched `Node.js` binary at a known path | `Mountain`'s&#x2001;⛰️&#x2001;`build.rs` bundles the binary; `Cocoon`&#x2001;🦋&#x2001;spawns it |
+| **Cocoon**&#x2001;🦋   | `TypeScript`, `JavaScript` | Platform-matched `Node.js` binary at a known path | `Mountain`'s&#x2001;⛰️ `build.rs` bundles the binary; `Cocoon`&#x2001;🦋 spawns it                |
 | **Mountain**&#x2001;⛰️ | `Rust` / `Tauri`           | Selected binary staged into the Tauri installer   | `build.rs` reads target-triple directory at compile time                                         |
 
 The `Download` Rust binary populates the SideCar directory structure once during
@@ -299,7 +299,7 @@ SideCar enforces binary integrity at multiple layers:
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Source of Truth**       | Binaries are fetched exclusively from `nodejs.org` official distribution feeds - no third-party mirrors                                        |
 | **Checksum Verification** | `Download` Rust binary validates SHA-256 checksums against `nodejs.org` published hashes before extraction                                     |
-| **Build-Time Selection**  | `Mountain`'s&#x2001;⛰️&#x2001;`build.rs` selects the exact binary for the target triple at compile time - runtime substitution is not possible |
+| **Build-Time Selection**  | `Mountain`'s&#x2001;⛰️ `build.rs` selects the exact binary for the target triple at compile time - runtime substitution is not possible        |
 | **Git LFS Integrity**     | Large binaries tracked through `Git LFS` with auto-managed `.gitattributes` pointer rules                                                      |
 
 ---
@@ -329,9 +329,9 @@ SideCar is designed to integrate with:
   architecture
 - [Why Rust](https://Editor.Land/Doc/why-rust) - Why `Rust` for the download
   tooling
-- **Mountain**&#x2001;⛰️&#x2001;- Native desktop shell -
+- **Mountain**&#x2001;⛰️ - Native desktop shell -
   [GitHub](https://github.com/CodeEditorLand/Mountain)
-- **Cocoon**&#x2001;🦋&#x2001;- `Node.js` extension host -
+- **Cocoon**&#x2001;🦋 - `Node.js` extension host -
   [GitHub](https://github.com/CodeEditorLand/Cocoon)
 
 ---
