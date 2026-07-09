@@ -9,13 +9,13 @@
 				</picture>
 			</h3>
 		</td>
-		<td colspan="3" valign="top"><h3 align="center">SideCar&#x2001;🚗</h3></td>
+		<td colspan="3" valign="top"><h3 align="center">SideCar&#x2001;🚃</h3></td>
 	</tr>
 </table>
 
 ---
 
-# **SideCar**&#x2001;🚗&#x2001;Architecture
+# **SideCar**&#x2001;🚃&#x2001;Architecture
 
 `SideCar` is the vendored runtime binary manager for `Land`:
 
