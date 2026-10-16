@@ -1,4 +1,4 @@
 [submodule "Documentation/Rust"]
 path = Documentation/Rust
-url = ssh://git@github.com/CodeEditorLand/RustDocumentationSideCarLand.git
+url = ssh://git@github.com/DocumentationCodeEditorLand/RustDocumentationSideCarLand.git
 ignore = all

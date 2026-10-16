@@ -156,7 +156,8 @@ impl DownloadCache {
 		// Create a BTreeMap to sort entries alphabetically by key
 		let SortedEntries:BTreeMap<_, _> = self.Entries.iter().collect();
 
-		// Create a temporary struct to hold the sorted entries for serialization
+		// Create a temporary struct to hold the sorted entries for
+		// serialization
 		let CacheToSerialize = serde_json::json!({
 
 			"Entries": SortedEntries
@@ -200,16 +201,16 @@ fn GetBaseSidecarDirectory() -> Result<PathBuf> {
 		.context("Executable must be in a directory (not the root).")?;
 
 	loop {
-		// Check A: Does Source/Library.rs exist in current directory? → return current
-		// directory
+		// Check A: Does Source/Library.rs exist in current directory? → return
+		// current directory
 		let LibraryRsPath = CurrentDir.join("Source").join("Library.rs");
 
 		if LibraryRsPath.exists() {
 			return Ok(CurrentDir.to_path_buf());
 		}
 
-		// Check B: Does a Cargo.toml exist in current directory with package.name =
-		// "SideCar"? → return current directory
+		// Check B: Does a Cargo.toml exist in current directory with
+		// package.name = "SideCar"? → return current directory
 		let CargoTomlPath = CurrentDir.join("Cargo.toml");
 
 		if CargoTomlPath.exists() {
@@ -218,7 +219,8 @@ fn GetBaseSidecarDirectory() -> Result<PathBuf> {
 					if let Some(Package) = Toml.get("package") {
 						if let Some(PackageName) = Package.get("name").and_then(|v| v.as_str()) {
 							if PackageName == "SideCar" {
-								// Verify that Source subdirectory exists as additional confirmation.
+								// Verify that Source subdirectory exists as
+								// additional confirmation.
 								let SourceDir = CurrentDir.join("Source");
 
 								if SourceDir.exists() {
@@ -231,9 +233,9 @@ fn GetBaseSidecarDirectory() -> Result<PathBuf> {
 			}
 		}
 
-		// Check C: Does Element/SideCar/Cargo.toml exist relative to current directory
-		// AND does it have package.name = "SideCar"? → return Element/SideCar
-		// subdirectory path
+		// Check C: Does Element/SideCar/Cargo.toml exist relative to current
+		// directory AND does it have package.name = "SideCar"? → return
+		// Element/SideCar subdirectory path
 		let SubdirCargoTomlPath = CurrentDir.join("Element").join("SideCar").join("Cargo.toml");
 
 		if SubdirCargoTomlPath.exists() {
@@ -242,11 +244,13 @@ fn GetBaseSidecarDirectory() -> Result<PathBuf> {
 					if let Some(Package) = Toml.get("package") {
 						if let Some(PackageName) = Package.get("name").and_then(|v| v.as_str()) {
 							if PackageName == "SideCar" {
-								// Verify that the Element/SideCar/Source subdirectory exists.
+								// Verify that the Element/SideCar/Source
+								// subdirectory exists.
 								let SourceDir = CurrentDir.join("Element").join("SideCar").join("Source");
 
 								if SourceDir.exists() {
-									// Return the full path to the Element/SideCar subdirectory.
+									// Return the full path to the
+									// Element/SideCar subdirectory.
 									return Ok(CurrentDir.join("Element").join("SideCar"));
 								}
 							}
@@ -516,7 +520,8 @@ fn ExtractArchive(ArchiveType:&ArchiveType, ArchivePath:&Path, ExtractionDirecto
 ///
 /// Designed to run concurrently for multiple tasks via Tokio tasks.
 async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<DownloadCache>>) -> Result<()> {
-	// Create the temporary directory inside the designated "Temporary" subfolder.
+	// Create the temporary directory inside the designated "Temporary"
+	// subfolder.
 	let TempDirectory = Builder::new()
 		.prefix("SideCar-Download-")
 		.tempdir_in(&Task.TempParentDirectory)
@@ -813,14 +818,16 @@ pub async fn Fn() -> Result<()> {
 		let mut ErrorsEncountered = 0;
 
 		for Result in Results {
-			// The first result is from tokio::spawn, the second from our function
+			// The first result is from tokio::spawn, the second from our
+			// function
 			if let Err(JoinError) = Result {
 				error!("A download task panicked or was cancelled: {}", JoinError);
 
 				ErrorsEncountered += 1;
 			} else if let Ok(Err(AppError)) = Result {
-				// We already logged the error inside `ProcessDownloadTask`, so just count it.
-				// Re-logging here to ensure it's captured at a higher level if needed.
+				// We already logged the error inside `ProcessDownloadTask`, so
+				// just count it. Re-logging here to ensure it's
+				// captured at a higher level if needed.
 				error!("A download task failed: {}", AppError);
 
 				ErrorsEncountered += 1;
