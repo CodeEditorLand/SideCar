@@ -1,4 +1,4 @@
-# **SideCar**&#x2001;🚃
+# **SideCar**
 
 <table>
 	<tr>
@@ -39,41 +39,41 @@
 	</tr>
 </table>
 
-Prebuilt `Node.js` Sidecar for Land&#x2001;🏞️
+Prebuilt `Node.js` Sidecar for `Land`.
 
-> **VS Code ships one `Node.js` binary and detects the platform at runtime, with
-> fallback chains that fail in edge cases - Alpine Linux, custom glibc versions,
-> ARM configurations. SideCar&#x2001;🚃 packages the exact `Node.js`
+> **`VS Code` ships one `Node.js` binary and detects the platform at runtime, with
+> fallback chains that fail in edge cases - `Alpine Linux`, custom `glibc` versions,
+> `ARM` configurations. `SideCar` packages the exact `Node.js`
 > binary for each target triple at compile time, so
-> `Cocoon`&#x2001;🦋 always gets the binary that matches the host. No
+> `Cocoon` always gets the binary that matches the host. No
 > runtime detection, no fallback chains, no surprises.**
 
 _"The right binary, for the right platform, at the right time."_
 
-[![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://github.com/CodeEditorLand/SideCar/blob/Current/LICENSE)
+[![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://github.com/CodeEditorLand/SideCar/tree/Current/LICENSE)
 [<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/) [![Crates.io](https://img.shields.io/crates/v/sidecar.svg)](https://crates.io/crates/sidecar)
 [<img src="https://editor.land/Image/Rust.svg" width="14" alt="Rust" />](https://www.rust-lang.org/) [![Rust Version](https://img.shields.io/badge/Rust-1.75+-orange.svg)](https://www.rust-lang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-16+-339933.svg)](https://nodejs.org/)
 
-**[Rust API Documentation](https://rust.documentation.sidecar.editor.land/)**&#x2001;📖
+**[`Rust` API Documentation](https://rust.documentation.sidecar.editor.land/)**
 
 ---
 
-## Overview
+## Overview 📋
 
-**SideCar**&#x2001;🚃 is the prebuilt `Node.js` sidecar repository for
-the **Land**&#x2001;🏞️ Code Editor. It packages platform-specific
+**`SideCar`** is the prebuilt `Node.js` sidecar repository for
+the **`Land`** Code Editor. It packages platform-specific
 `Node.js` binaries organized by target triple so that
-`Cocoon`&#x2001;🦋 - Land's `Node.js` extension host - receives the exact
-runtime binary that matches the target platform. SideCar replaces runtime
+`Cocoon` - `Land`'s `Node.js` extension host - receives the exact
+runtime binary that matches the target platform. `SideCar` replaces runtime
 detection and fallback chains with a single deterministic lookup at build time.
 
-VS Code ships one `Node.js` binary and detects the platform at runtime - a
-strategy that breaks on Alpine Linux, custom glibc versions, and ARM
-configurations. SideCar eliminates this class of failure entirely by bundling
+`VS Code` ships one `Node.js` binary and detects the platform at runtime - a
+strategy that breaks on `Alpine Linux`, custom `glibc` versions, and `ARM`
+configurations. `SideCar` eliminates this class of failure entirely by bundling
 the correct binary per target triple at compile time.
 
-**SideCar is engineered to:**
+**`SideCar` is engineered to:**
 
 1. **Provide Portable Runtimes** - Ship vendored `Node.js` binaries that
    eliminate user dependency requirements and system-`Node.js` coupling.
@@ -82,18 +82,18 @@ the correct binary per target triple at compile time.
 3. **Support Multiple Platforms** - Comprehensive matrix for `macOS`, `Linux`,
    and `Windows` on `x86_64` and `aarch64` architectures.
 4. **Automate Download Management** - Automated fetching, caching, and `Git LFS`
-   management of runtime binaries via the `Download` Rust tool.
+   management of runtime binaries via the `Download` `Rust` tool.
 
 ---
 
-## Key Features&#x2001;🔐
+## Key Features 🔐
 
 **Deterministic Binary Selection** - Binaries are organized by target triple
 (`aarch64-apple-darwin/`, `x86_64-unknown-linux-gnu/`, etc.).
-`Mountain`'s&#x2001;⛰️ `build.rs` selects the correct binary at compile time -
-`Cocoon`&#x2001;🦋 receives a path, never a guess.
+`Mountain`'s `build.rs` selects the correct binary at compile time -
+`Cocoon` receives a path, never a guess.
 
-**Concurrent Downloads** - The `Download` Rust binary uses `Tokio` for parallel
+**Concurrent Downloads** - The `Download` `Rust` binary uses `Tokio` for parallel
 fetching of multiple runtime binaries from `nodejs.org`, maximizing throughput
 across the full platform matrix.
 
@@ -115,175 +115,189 @@ repository lean while binaries remain accessible.
 
 ---
 
-## Core Architecture Principles&#x2001;🏗️
+## Core Architecture Principles 🏗️
 
-| Principle                  | Description                                                                                                                                                                               | Key Components                                           |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| **Deterministic Delivery** | Package the exact `Node.js` binary per target triple at compile time. No runtime detection, no fallback chains, no surprises.                                                             | `build.rs`, target-triple directories, `Cache.json`      |
-| **Build-Time Integration** | `Mountain`'s&#x2001;⛰️ build system selects the correct binary from SideCar during the Tauri installer build. `Cocoon`&#x2001;🦋 receives a path, never a runtime decision.                | `build.rs` binary selection logic, `Source/Download.rs`  |
-| **Automated Sourcing**     | Fetch, verify, and cache official `Node.js` distributions with parallel `Tokio` downloads and intelligent version resolution.                                                             | `Source/Download.rs`, `Cache.json`, `.gitattributes`     |
-| **Platform Completeness**  | Cover every target triple Land&#x2001;🏞️ ships on - no edge case left to a runtime fallback.                                                                                              | Target-triple directory layout, versioned subdirectories |
+| Principle | Description | Key Components |
+| -------- | -------- | -------- |
+| **Deterministic Delivery** | Package the exact `Node.js` binary per target triple at compile time. No runtime detection, no fallback chains, no surprises. | `build.rs`, target-triple directories, `Cache.json` |
+| **Build-Time Integration** | `Mountain`'s build system selects the correct binary from `SideCar` during the `Tauri` installer build. `Cocoon` receives a path, never a runtime decision. | `build.rs` binary selection logic, `Source/Download.rs` |
+| **Automated Sourcing** | Fetch, verify, and cache official `Node.js` distributions with parallel `Tokio` downloads and intelligent version resolution. | `Source/Download.rs`, `Cache.json`, `.gitattributes` |
+| **Platform Completeness** | Cover every target triple `Land` ships on - no edge case left to a runtime fallback. | Target-triple directory layout, versioned subdirectories |
 
 ---
 
-## System Architecture
+## System Architecture 🏗️
 
 ```mermaid
 graph LR
-    classDef sidecar   fill:#d0d8ff,stroke:#4a6fa5,stroke-width:2px,color:#001050;
-    classDef external  fill:#ebebeb,stroke:#888,stroke-width:1px,stroke-dasharray:5 5,color:#333;
-    classDef storage   fill:#cce8ff,stroke:#2980b9,stroke-width:1px,color:#003050;
-    classDef mountain  fill:#f0d0ff,stroke:#9b59b6,stroke-width:2px,color:#2c0050;
-    classDef cocoon    fill:#d0f0d0,stroke:#27ae60,stroke-width:1px,color:#0a3a0a;
+    classDef sidecar fill:#d0d8ff,stroke:#4a6fa5,stroke-width:2px,color:#001050;
+    classDef external fill:#ebebeb,stroke:#888,stroke-width:1px,stroke-dasharray:5 5,color:#333;
+    classDef storage fill:#cce8ff,stroke:#2980b9,stroke-width:1px,color:#003050;
+    classDef mountain fill:#f0d0ff,stroke:#9b59b6,stroke-width:2px,color:#2c0050;
+    classDef cocoon fill:#d0f0d0,stroke:#27ae60,stroke-width:1px,color:#0a3a0a;
 
     subgraph SOURCES["External Sources"]
-        NodeJSOrg["nodejs.org official distributions"]:::external
+        NodeJSOrg["nodejs.org<br/>official distributions"]:::external
     end
 
-    subgraph SIDECAR["SideCar 🚃 - Prebuilt Node.js Sidecar"]
+    subgraph SIDECAR["SideCar - Prebuilt Node.js Sidecar"]
         direction TB
         subgraph TOOL["Source/ - Download Tool (Rust binary)"]
-            DownloadBin["Download.rs ⬇ fetch · verify · organise Tokio parallel downloads"]:::sidecar
-            CacheJSON["Cache.json 💾 version tracking skip redundant downloads"]:::sidecar
-            GitLFS[".gitattributes 📦 Git LFS pointers for large binaries"]:::sidecar
+            DownloadBin["Download.rs<br/>fetch / verify / organise<br/>Tokio parallel downloads"]:::sidecar
+            CacheJSON["Cache.json<br/>version tracking<br/>skip redundant downloads"]:::sidecar
+            GitLFS[".gitattributes<br/>Git LFS pointers<br/>for large binaries"]:::sidecar
             DownloadBin --> CacheJSON
             DownloadBin --> GitLFS
         end
         subgraph LAYOUT["Target-Triple Layout"]
-            Darwin_ARM["aarch64-apple-darwin/ 🍎 Apple Silicon"]:::storage
-            Darwin_x86["x86_64-apple-darwin/ 🖥 macOS Intel"]:::storage
-            Win_x86["x86_64-pc-windows-msvc/ 🪟 Windows x64"]:::storage
-            Linux_ARM["aarch64-unknown-linux-gnu/ 🐧 Linux ARM64"]:::storage
-            Linux_x86["x86_64-unknown-linux-gnu/ 🐧 Linux x64"]:::storage
+            Darwin_ARM["aarch64-apple-darwin/<br/>Apple Silicon"]:::storage
+            Darwin_x86["x86_64-apple-darwin/<br/>macOS Intel"]:::storage
+            Win_x86["x86_64-pc-windows-msvc/<br/>Windows x64"]:::storage
+            Linux_ARM["aarch64-unknown-linux-gnu/<br/>Linux ARM64"]:::storage
+            Linux_x86["x86_64-unknown-linux-gnu/<br/>Linux x64"]:::storage
         end
-        BuildRS["build.rs 🔧 binary selection at build time stages correct triple into installer"]:::sidecar
+        BuildRS["build.rs<br/>binary selection at build time<br/>stages correct triple into installer"]:::sidecar
 
         DownloadBin --> LAYOUT
         BuildRS --> LAYOUT
     end
 
     subgraph CONSUMERS["Consumers at Runtime"]
-        Mountain["Mountain ⛰️ build.rs bundles chosen binary into Tauri installer"]:::mountain
-        Cocoon["Cocoon 🦋 receives correct Node.js binary no runtime detection needed"]:::cocoon
+        Mountain["Mountain<br/>build.rs bundles chosen binary<br/>into Tauri installer"]:::mountain
+        Cocoon["Cocoon<br/>receives correct Node.js binary<br/>no runtime detection needed"]:::cocoon
     end
 
     NodeJSOrg --> DownloadBin
     LAYOUT --> BuildRS
     BuildRS --> Mountain
-    Mountain -- spawns with Spawn.rs --> Cocoon
+    Mountain -- "spawns with Spawn.rs" --> Cocoon
 ```
 
 **Data flow paths:**
 
-| Path                            | Mechanism                    | Description                                                  |
-| ------------------------------- | ---------------------------- | ------------------------------------------------------------ |
-| `nodejs.org` → `Download`       | HTTP fetch via `reqwest`     | Official `Node.js` distribution archives fetched in parallel |
-| `Download` → Target directories | Filesystem extraction        | Archives extracted and organized by target triple            |
-| `Download` → `Cache.json`       | `serde_json` serialization   | Version metadata written to avoid redundant downloads        |
-| `Download` → `.gitattributes`   | File write                   | `Git LFS` tracking rules updated for large binaries          |
-| Target directories → `build.rs` | Filesystem read              | Build script selects correct binary for the target triple    |
-| `build.rs` → `Mountain`         | Cargo build integration      | Selected binary staged into the Tauri installer bundle       |
-| `Mountain` → `Cocoon`           | Process spawn via `Spawn.rs` | Correct `Node.js` binary launched at runtime                 |
+| Path | Mechanism | Description |
+| -------- | -------- | -------- |
+| `nodejs.org` -> `Download` | HTTP fetch via `reqwest` | Official `Node.js` distribution archives fetched in parallel |
+| `Download` -> Target directories | Filesystem extraction | Archives extracted and organized by target triple |
+| `Download` -> `Cache.json` | `serde_json` serialization | Version metadata written to avoid redundant downloads |
+| `Download` -> `.gitattributes` | File write | `Git LFS` tracking rules updated for large binaries |
+| Target directories -> `build.rs` | Filesystem read | Build script selects correct binary for the target triple |
+| `build.rs` -> `Mountain` | Cargo build integration | Selected binary staged into the `Tauri` installer bundle |
+| `Mountain` -> `Cocoon` | Process spawn via `Spawn.rs` | Correct `Node.js` binary launched at runtime |
 
 ---
 
-## Key Components
+## Key Components 🧩
 
-| Component      | Path                       | Description                                                                       |
-| -------------- | -------------------------- | --------------------------------------------------------------------------------- |
-| Download Tool  | `Source/Download.rs`       | Main binary: fetches, verifies, and organizes platform binaries from `nodejs.org` |
-| Library        | `Source/Library.rs`        | Module declarations and shared utilities                                          |
-| Binary Entry   | `Source/main.rs`           | Binary entry point for the download tool                                          |
-| Build Script   | `build.rs`                 | Binary selection and staging for the Tauri installer; reads `Cargo.toml` version  |
-| DNS Override   | `Resource/dns-override.js` | Shared `Node.js` resource for DNS resolution customization                        |
-| Cache          | `Cache.json`               | Download cache metadata tracking fetched versions per target triple               |
-| Git Attributes | `.gitattributes`           | `Git LFS` pointer rules for large binary tracking                                 |
+| Component | Path | Description |
+| -------- | -------- | -------- |
+| Download Tool | `Source/Download.rs` | Main binary: fetches, verifies, and organizes platform binaries from `nodejs.org` |
+| Library | `Source/Library.rs` | Module declarations and shared utilities |
+| Binary Entry | `Source/main.rs` | Binary entry point for the download tool |
+| Build Script | `build.rs` | Binary selection and staging for the `Tauri` installer; reads `Cargo.toml` version |
+| DNS Override | `Resource/dns-override.js` | Shared `Node.js` resource for DNS resolution customization |
+| Cache | `Cache.json` | Download cache metadata tracking fetched versions per target triple |
+| Git Attributes | `.gitattributes` | `Git LFS` pointer rules for large binary tracking |
 
 ---
 
-## Project Structure&#x2001;🗺️
+## Project Structure 🗺️
 
-```
+```text
 Element/SideCar/
-├── Source/
-│   ├── Download.rs              # Main download binary: fetch, verify, organize
-│   ├── Library.rs               # Module declarations and shared utilities
-│   └── main.rs                  # Binary entry point
-├── build.rs                     # Build script: binary selection and staging
-├── Cache.json                   # Download cache metadata (version tracking)
-├── .gitattributes               # Git LFS pointer rules for large binaries
-├── Resource/
-│   └── dns-override.js          # DNS resolution customization resource
-├── aarch64-apple-darwin/        # macOS Apple Silicon binaries
-├── x86_64-apple-darwin/         # macOS Intel binaries
-├── x86_64-pc-windows-msvc/      # Windows x64 binaries
-├── aarch64-unknown-linux-gnu/   # Linux ARM64 (glibc) binaries
-├── x86_64-unknown-linux-gnu/    # Linux x64 (glibc) binaries
-├── Temporary/                   # Temporary workspace for downloads
-├── Documentation/
-│   ├── GitHub/                  # GitHub-specific documentation
-│   │   ├── Architecture.md      # Detailed architecture document
-│   │   └── DeepDive.md          # Technical deep-dive
-│   └── Rust/                    # Cargo doc output
-└── Cargo.toml
++-- Source/
+|   +-- Download.rs              # Main download binary: fetch, verify, organize
+|   +-- Library.rs               # Module declarations and shared utilities
+|   +-- main.rs                  # Binary entry point
++-- build.rs                     # Build script: binary selection and staging
++-- Cache.json                   # Download cache metadata (version tracking)
++-- .gitattributes               # Git LFS pointer rules for large binaries
++-- Resource/
+|   +-- dns-override.js          # DNS resolution customization resource
++-- aarch64-apple-darwin/        # macOS Apple Silicon binaries
++-- x86_64-apple-darwin/         # macOS Intel binaries
++-- x86_64-pc-windows-msvc/      # Windows x64 binaries
++-- aarch64-unknown-linux-gnu/   # Linux ARM64 (glibc) binaries
++-- x86_64-unknown-linux-gnu/    # Linux x64 (glibc) binaries
++-- Temporary/                   # Temporary workspace for downloads
++-- Documentation/
+|   +-- GitHub/                  # GitHub-specific documentation
+|   |   +-- Architecture.md      # Detailed architecture document
+|   |   +-- DeepDive.md          # Technical deep-dive
+|   +-- Rust/                    # Cargo doc output
++-- Cargo.toml
 ```
 
 ---
 
-## In the Land Project
+## In the Land Project 🔌
 
-SideCar vendored binaries are the compile-time source of truth for
-`Cocoon`'s&#x2001;🦋 `Node.js` runtime. During the application build,
-`Mountain`'s&#x2001;⛰️ `build.rs` orchestrator selects the correct binary
-from SideCar based on the target triple. `Cocoon`&#x2001;🦋 receives a
+`SideCar` vendored binaries are the compile-time source of truth for
+`Cocoon`'s `Node.js` runtime. During the application build,
+`Mountain`'s `build.rs` orchestrator selects the correct binary
+from `SideCar` based on the target triple. `Cocoon` receives a
 deterministic path - no runtime detection, no fallback chains, no
 platform-specific edge cases.
 
-| Consumer               | Language                   | How SideCar Delivers                              | Integration Point                                                                                |
-| ---------------------- | -------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Cocoon**&#x2001;🦋   | `TypeScript`, `JavaScript` | Platform-matched `Node.js` binary at a known path | `Mountain`'s&#x2001;⛰️ `build.rs` bundles the binary; `Cocoon`&#x2001;🦋 spawns it                |
-| **Mountain**&#x2001;⛰️ | `Rust` / `Tauri`           | Selected binary staged into the Tauri installer   | `build.rs` reads target-triple directory at compile time                                         |
+```mermaid
+graph LR
+    Build["build.rs<br/>reads target triple"] --> Select["Selected binary<br/>staged into installer"]
+    Select --> Mount["Mountain<br/>bundles binary"]
+    Mount --> Spawn["Spawn.rs<br/>process spawn"]
+    Spawn --> Coc["Cocoon<br/>deterministic path"]
+```
 
-The `Download` Rust binary populates the SideCar directory structure once during
+| Consumer | Language | How `SideCar` Delivers | Integration Point |
+| -------- | -------- | -------- | -------- |
+| **`Cocoon`** | `TypeScript`, `JavaScript` | Platform-matched `Node.js` binary at a known path | `Mountain`'s `build.rs` bundles the binary; `Cocoon` spawns it |
+| **`Mountain`** | `Rust` / `Tauri` | Selected binary staged into the `Tauri` installer | `build.rs` reads target-triple directory at compile time |
+
+The `Download` `Rust` binary populates the `SideCar` directory structure once during
 project setup by fetching official distributions from `nodejs.org` and
 organizing them by target triple convention. Subsequent runs only fetch new or
 updated versions.
 
 ---
 
-## Getting Started&#x2001;🚀
+## Getting Started 🚀
 
-### Prerequisites
+### Prerequisites ⚙️
 
-- **Rust** 1.75 or later
+- **`Rust`** 1.75 or later
 - `Git LFS` installed and configured (for binary tracking)
 
-### Build the Download Tool
+### Build the Download Tool 📦
 
 ```bash
 cd Element/SideCar
 cargo build --release
 ```
 
-### Run the Download Tool
+### Run the Download Tool 🚀
 
 ```bash
 # Fetch and organize all platform binaries
 ./Target/release/Download
 ```
 
-### Usage Pattern
+### Usage Pattern 🗺️
 
-The SideCar directory is populated once during project setup:
+The `SideCar` directory is populated once during project setup:
+
+```mermaid
+flowchart TD
+    A["Build Download Tool<br/>Source/Download.rs"] --> B["Run Download<br/>fetch and organize binaries"]
+    B --> C["Build Mountain<br/>select binaries at compile time"]
+```
 
 1. **Build Download Tool:** Compile the `Download` binary from
    `Source/Download.rs`
 2. **Run Download:** Execute to fetch and organize all runtime binaries
-3. **Build Mountain&#x2001;⛰️:** The build system selects appropriate binaries
-   from SideCar at compile time
+3. **Build `Mountain`:** The build system selects appropriate binaries
+   from `SideCar` at compile time
 
 > [!NOTE] The target-triple directories (`aarch64-apple-darwin/`,
-> `x86_64-unknown-linux-gnu/`, etc.) are populated by the `Download` Rust binary
+> `x86_64-unknown-linux-gnu/`, etc.) are populated by the `Download` `Rust` binary
 > and contain large, third-party binaries. These directories **should not be
 > committed directly to version control** - use `Git LFS` via the auto-managed
 > `.gitattributes` file. The `Download` tool should be run once to vendor the
@@ -291,52 +305,39 @@ The SideCar directory is populated once during project setup:
 
 ---
 
-## Security&#x2001;🔒
+## Security 🛡️
 
-SideCar enforces binary integrity at multiple layers:
+`SideCar` enforces binary integrity at multiple layers:
 
-| Layer                     | Mechanism                                                                                                                                      |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Source of Truth**       | Binaries are fetched exclusively from `nodejs.org` official distribution feeds - no third-party mirrors                                        |
-| **Checksum Verification** | `Download` Rust binary validates SHA-256 checksums against `nodejs.org` published hashes before extraction                                     |
-| **Build-Time Selection**  | `Mountain`'s&#x2001;⛰️ `build.rs` selects the exact binary for the target triple at compile time - runtime substitution is not possible        |
-| **Git LFS Integrity**     | Large binaries tracked through `Git LFS` with auto-managed `.gitattributes` pointer rules                                                      |
-
----
-
-## Compatibility
-
-SideCar is designed to integrate with:
-
-| Target                 | Integration                                                                        |
-| ---------------------- | ---------------------------------------------------------------------------------- |
-| **Cocoon**&#x2001;🦋   | Provides the exact `Node.js` binary at a deterministic path - no runtime detection |
-| **Mountain**&#x2001;⛰️ | Binary selected at compile time via `build.rs`; staged into Tauri installer        |
-| **nodejs.org**         | Official distribution source; version resolution via download index                |
-| **Git LFS**            | Large binary tracking via auto-managed `.gitattributes`                            |
+| Layer | Mechanism |
+| -------- | -------- |
+| **Source of Truth** | Binaries are fetched exclusively from `nodejs.org` official distribution feeds - no third-party mirrors |
+| **Checksum Verification** | `Download` `Rust` binary validates SHA-256 checksums against `nodejs.org` published hashes before extraction |
+| **Build-Time Selection** | `Mountain`'s `build.rs` selects the exact binary for the target triple at compile time - runtime substitution is not possible |
+| **`Git LFS` Integrity** | Large binaries tracked through `Git LFS` with auto-managed `.gitattributes` pointer rules |
 
 ---
 
-## API Reference
+## Compatibility 🔌
 
-- **[Rust API Documentation](https://rust.documentation.sidecar.editor.land/)**&#x2001;📖
+`SideCar` is designed to integrate with:
 
----
-
-## Related Documentation
-
-- [Architecture Overview](https://Editor.Land/Doc/architecture) - Land system
-  architecture
-- [Why Rust](https://Editor.Land/Doc/why-rust) - Why `Rust` for the download
-  tooling
-- **Mountain**&#x2001;⛰️ - Native desktop shell -
-  [GitHub](https://github.com/CodeEditorLand/Mountain)
-- **Cocoon**&#x2001;🦋 - `Node.js` extension host -
-  [GitHub](https://github.com/CodeEditorLand/Cocoon)
+| Target | Integration |
+| -------- | -------- |
+| **`Cocoon`** | Provides the exact `Node.js` binary at a deterministic path - no runtime detection |
+| **`Mountain`** | Binary selected at compile time via `build.rs`; staged into `Tauri` installer |
+| **`nodejs.org`** | Official distribution source; version resolution via download index |
+| **`Git LFS`** | Large binary tracking via auto-managed `.gitattributes` |
 
 ---
 
-## License&#x2001;⚖️
+## API Reference 📖
+
+- **[`Rust` API Documentation](https://rust.documentation.sidecar.editor.land/)**
+
+---
+
+## License 📖
 
 This project is released into the public domain under the **Creative Commons CC0
 Universal** license. You are free to use, modify, distribute, and build upon
@@ -346,7 +347,7 @@ file.
 
 ---
 
-## Changelog&#x2001;📜
+## Changelog 📖
 
 Stay updated with our progress! See
 [`CHANGELOG.md`](https://github.com/CodeEditorLand/SideCar/tree/Current/CHANGELOG.md)
@@ -354,17 +355,17 @@ for a history of changes.
 
 ---
 
-## Funding & Acknowledgements&#x2001;🙏🏻
+## Funding & Acknowledgements 📋
 
-**Land**&#x2001;🏞️ is proud to be an open-source endeavor. Our journey is
+**`Land`** is proud to be an open-source endeavor. Our journey is
 significantly supported by the organizations and projects that believe in the
 future of open-source software.
 
 This project is funded through
-[NGI0 Commons Fund](https://NLnet.NL/commonsfund), a fund established by
-[NLnet](https://NLnet.NL) with financial support from the European Commission's
-[Next Generation Internet](https://ngi.eu) program. Learn more at the
-[NLnet project page](https://NLnet.NL/project/Land).
+[`NGI0 Commons Fund`](https://NLnet.NL/commonsfund), a fund established by
+[`NLnet`](https://NLnet.NL) with financial support from the European Commission's
+[`Next Generation Internet`](https://ngi.eu) program. Learn more at the
+[`NLnet` project page](https://NLnet.NL/project/Land).
 
 <table>
 	<thead>
@@ -387,8 +388,22 @@ This project is funded through
 
 ---
 
-**Project Maintainers**: Source Open
-([Source/Open@editor.land](mailto:Source/Open@editor.land)) |
-[GitHub Repository](https://github.com/CodeEditorLand/SideCar) |
-[Report an Issue](https://github.com/CodeEditorLand/SideCar/issues) |
+## Related Documentation 📖
+
+- [Architecture Overview](https://Editor.Land/Doc/architecture) - `Land` system
+  architecture
+- [Why Rust](https://Editor.Land/Doc/why-rust) - Why `Rust` for the download
+  tooling
+- **`Mountain`** - Native desktop shell -
+  [GitHub](https://github.com/CodeEditorLand/Mountain)
+- **`Cocoon`** - `Node.js` extension host -
+  [GitHub](https://github.com/CodeEditorLand/Cocoon)
+
+---
+
 [Security Policy](https://github.com/CodeEditorLand/SideCar/security/policy)
+
+**Project Maintainers:** Source Open
+([Source/Open@Editor.Land](mailto:Source/Open@Editor.Land)) |
+[GitHub Repository](https://github.com/CodeEditorLand/SideCar) |
+[Report an Issue](https://github.com/CodeEditorLand/SideCar/issues)

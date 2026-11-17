@@ -9,13 +9,13 @@
 				</picture>
 			</h3>
 		</td>
-		<td colspan="3" valign="top"><h3 align="center">SideCar&#x2001;🚃</h3></td>
+		<td colspan="3" valign="top"><h3 align="center">SideCar</h3></td>
 	</tr>
 </table>
 
 ---
 
-# **SideCar**&#x2001;🚃&#x2001;Architecture
+# SideCar Architecture
 
 `SideCar` is the vendored runtime binary manager for `Land`:
 
@@ -34,7 +34,8 @@
 4. [Download System](#download-system)
 5. [Supported Platforms](#supported-platforms)
 6. [Caching Strategy](#caching-strategy)
-7. [Related Documentation](#related-documentation)
+7. [Shim Compatibility](#shim-compatibility)
+8. [Related Documentation](#related-documentation)
 
 ---
 
@@ -53,7 +54,7 @@ graph TB
     MOUNTAIN -->|"sidecar runtime"| COCOON["Cocoon<br/>Extension Host"]
 ```
 
-## Overview&#x2001;📋
+## Overview 📋
 
 `SideCar` is a `Rust` library and binary that manages pre-compiled native
 dependency binaries for `Land`:
@@ -62,19 +63,19 @@ dependency binaries for `Land`:
 - Downloads them from official sources
 - Makes them available to `Mountain` at build time and runtime
 
-| Attribute    | Value                                                                 |
-| ------------ | --------------------------------------------------------------------- |
-| Language     | `Rust` (edition 2024)                                                 |
-| Crate type   | Library + Binary                                                      |
+| Attribute | Value |
+| -------- | -------- |
+| Language | `Rust` (edition 2024) |
+| Crate type | Library + Binary |
 | Dependencies | `tokio`, `reqwest`, `serde`, `zip`, `tar`, `flate2`, `Common`, `Mist` |
-| Consumed by  | `Mountain` (build-time binary selection)                              |
-| Storage      | `SideCar/Cache.json` + per-platform cached binaries                   |
+| Consumed by | `Mountain` (build-time binary selection) |
+| Storage | `SideCar/Cache.json` + per-platform cached binaries |
 
 ---
 
-## Architecture&#x2001;🏗️
+## Architecture 🏗️
 
-```
+```text
 +---------------------------------------------------------------+
 |                        SideCar                                 |
 |                                                                |
@@ -94,22 +95,22 @@ dependency binaries for `Land`:
 +---------------------------------------------------------------+
 ```
 
-### Module Map 🗺️
+### Module Map 🗺️
 
-| Path                 | Purpose                                                 |
-| :------------------- | :------------------------------------------------------ |
+| Path | Purpose |
+| -------- | -------- |
 | `Source/Download.rs` | Binary download, archive extraction, platform targeting |
-| `Source/Library.rs`  | Library root                                            |
-| `Source/main.rs`     | Binary entry point for standalone operation             |
+| `Source/Library.rs` | Library root |
+| `Source/main.rs` | Binary entry point for standalone operation |
 
 ---
 
-## Binary Resolution&#x2001;🔍
+## Binary Resolution 🔬
 
 The resolution process selects the correct `Node.js` binary for the target
 platform:
 
-```
+```text
 Build.sh reads NodeVersion and NodePlatform from .env.Land
     |
     v
@@ -139,7 +140,22 @@ SideCar::resolve()
 Return resolved binary path to Mountain
 ```
 
-### Version Resolution Priority&#x2001;📊
+```mermaid
+flowchart TD
+    A["Build.sh<br/>reads NodeVersion and NodePlatform from .env.Land"] --> B["SideCar::resolve()"]
+    B --> C{"Cached in<br/>SideCar/Cache.json?"}
+    C -- "yes" --> D["Return cached path"]
+    C -- "no" --> E["Determine target platform string"]
+    E --> F["Construct download URL"]
+    F --> G["Download via Download.rs"]
+    G --> H["Verify SHA-256 checksum"]
+    H --> I["Extract to SideCar/{platform}/node"]
+    I --> J["Record in Cache.json"]
+    J --> K["Return resolved binary path to Mountain"]
+    D --> K
+```
+
+### Version Resolution Priority 📊
 
 1. `NodeVersion` environment variable (explicit version override)
 2. `SideCar/Cache.json` latest cached version
@@ -147,21 +163,21 @@ Return resolved binary path to Mountain
 
 ---
 
-## Download System&#x2001;📥
+## Download System 📦
 
 The `Download` module handles archive retrieval and extraction:
 
-| Operation            | Description                                                   |
-| -------------------- | ------------------------------------------------------------- |
-| URL construction     | Builds platform-specific download URL from version + platform |
-| HTTP download        | Streaming download with timeout and retry                     |
-| SHA-256 verification | Checksum verification against published hash                  |
-| Archive extraction   | `.tar.gz` decompression with platform prefix stripping        |
-| Binary placement     | Single binary extracted to `SideCar/{platform}/node`          |
+| Operation | Description |
+| -------- | -------- |
+| URL construction | Builds platform-specific download URL from version + platform |
+| HTTP download | Streaming download with timeout and retry |
+| SHA-256 verification | Checksum verification against published hash |
+| Archive extraction | `.tar.gz` decompression with platform prefix stripping |
+| Binary placement | Single binary extracted to `SideCar/{platform}/node` |
 
-### Download Flow&#x2001;📋
+### Download Flow 📋
 
-```
+```text
 1. HTTP GET to https://nodejs.org/dist/v{version}/SHASUMS256.txt
 2. Parse SHASUMS256.txt for target binary hash
 3. HTTP GET to https://nodejs.org/dist/v{version}/node-v{version}-{platform}.tar.gz
@@ -173,20 +189,38 @@ The `Download` module handles archive retrieval and extraction:
 9. Update Cache.json
 ```
 
+```mermaid
+sequenceDiagram
+    participant D as Download
+    participant N as nodejs.org
+    participant C as Cache.json
+    D->>N: GET /dist/v{version}/SHASUMS256.txt
+    N-->>D: target binary hash
+    D->>N: GET /dist/v{version}/node-v{version}-{platform}.tar.gz
+    loop stream to temporary download file
+        N-->>D: archive chunk
+        D->>D: compute SHA-256 hash during download
+    end
+    D->>D: verify hash against published checksum
+    D->>D: extract node binary from archive
+    D->>D: move binary to SideCar/{platform}/node
+    D->>C: update Cache.json
+```
+
 ---
 
-## Supported Platforms
+## Supported Platforms ⚙️
 
-| Target Triple               | Platform String | Archive Pattern                       |
-| --------------------------- | --------------- | ------------------------------------- |
-| `aarch64-apple-darwin`      | `darwin-arm64`  | `node-v{version}-darwin-arm64.tar.gz` |
-| `x86_64-apple-darwin`       | `darwin-x64`    | `node-v{version}-darwin-x64.tar.gz`   |
-| `aarch64-unknown-linux-gnu` | `linux-arm64`   | `node-v{version}-linux-arm64.tar.gz`  |
-| `x86_64-unknown-linux-gnu`  | `linux-x64`     | `node-v{version}-linux-x64.tar.gz`    |
+| Target Triple | Platform String | Archive Pattern |
+| -------- | -------- | -------- |
+| `aarch64-apple-darwin` | `darwin-arm64` | `node-v{version}-darwin-arm64.tar.gz` |
+| `x86_64-apple-darwin` | `darwin-x64` | `node-v{version}-darwin-x64.tar.gz` |
+| `aarch64-unknown-linux-gnu` | `linux-arm64` | `node-v{version}-linux-arm64.tar.gz` |
+| `x86_64-unknown-linux-gnu` | `linux-x64` | `node-v{version}-linux-x64.tar.gz` |
 
 ---
 
-## Caching Strategy&#x2001;💾
+## Caching Strategy ⚙️
 
 `SideCar` maintains a JSON-based cache manifest at `SideCar/Cache.json`:
 
@@ -204,13 +238,13 @@ The `Download` module handles archive retrieval and extraction:
 }
 ```
 
-| Cache Key       | Value                  | Description                         |
-| --------------- | ---------------------- | ----------------------------------- |
-| Version key     | `{version}-{platform}` | Uniquely identifies a binary        |
-| `path`          | Relative path          | Location of cached binary           |
-| `sha256`        | Hex string             | Checksum for integrity verification |
-| `downloaded_at` | ISO 8601               | Timestamp of download               |
-| `size`          | Bytes                  | Binary file size                    |
+| Cache Key | Value | Description |
+| -------- | -------- | -------- |
+| Version key | `{version}-{platform}` | Uniquely identifies a binary |
+| `path` | Relative path | Location of cached binary |
+| `sha256` | Hex string | Checksum for integrity verification |
+| `downloaded_at` | ISO 8601 | Timestamp of download |
+| `size` | Bytes | Binary file size |
 
 Cache entries are invalidated when:
 
@@ -220,7 +254,26 @@ Cache entries are invalidated when:
 
 ---
 
-## Related Documentation&#x2001;📚
+## Shim Compatibility 🛡️
+
+| Low-Level Shim | Coverage Shim |
+| -------- | -------- |
+| Tier: `TierShim=Own\|Preempt` | Tier: `TierShim=Proxy\|Replace` |
+| Engine prototype hooks | Service routing + audit |
+| Error, Emitter, Cancel, Dispose, Async, Timing | IPC SwallowMap, DI proxy, AuditLog |
+
+> This Element supports the `Land` deep-shim interception system. The shim
+> intercepts `VS Code` engine events at both the `JavaScript` prototype level
+> (orange) and the application service level (blue). Gated behind `TierShim`
+> env var (default: `None` - zero overhead). See the
+> [Shim documentation](https://github.com/CodeEditorLand/Land/tree/Current/Documentation/GitHub/Shim.md).
+
+**Shim Modules:** No shim-specific modules - events routed through
+`Wind`/`Mountain`/`Cocoon`.
+
+---
+
+## Related Documentation 📖
 
 - [Mountain](https://github.com/CodeEditorLand/Mountain/tree/Current/Documentation/GitHub/Architecture.md) -
   Main backend (binary consumer)
@@ -230,25 +283,6 @@ Cache entries are invalidated when:
   Build pipeline integration
 - [RustInfrastructure](https://github.com/CodeEditorLand/Land/tree/Current/Documentation/GitHub/RustInfrastructure.md) -
   `Rust` backend components
-
----
-
-## Shim Compatibility
-
-| 🟠 Low-Level Shim                              | 🔵 Coverage Shim                   |
-| ---------------------------------------------- | ---------------------------------- |
-| Tier: `TierShim=Own\|Preempt`                  | Tier: `TierShim=Proxy\|Replace`    |
-| Engine prototype hooks                         | Service routing + audit            |
-| Error, Emitter, Cancel, Dispose, Async, Timing | IPC SwallowMap, DI proxy, AuditLog |
-
-> This Element supports the Land deep-shim interception system. The shim
-> intercepts VS Code engine events at both the JavaScript prototype level (🟠
-> orange) and the application service level (🔵 blue). Gated behind `TierShim`
-> env var (default: `None` - zero overhead). See the
-> [Shim documentation](https://github.com/CodeEditorLand/Land/tree/Current/Documentation/GitHub/Shim.md).
-
-**Shim Modules:** No shim-specific modules - events routed through
-`Wind`/`Mountain`/`Cocoon`.
 
 ---
 
