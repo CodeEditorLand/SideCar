@@ -16,18 +16,18 @@
 //!
 //! ## Features
 //!
-//! - **Asynchronous, concurrent downloads** — Leverages Tokio to download
+//! - **Asynchronous, concurrent downloads** - Leverages Tokio to download
 //!   multiple binaries in parallel, significantly speeding up the process.
-//! - **Intelligent caching** — Maintains a `Cache.json` file to track
+//! - **Intelligent caching** - Maintains a `Cache.json` file to track
 //!   downloaded versions. Automatically detects if a newer patch version is
 //!   available for a requested major version and updates the binary.
-//! - **Git LFS management** — Automatically creates or updates the
+//! - **Git LFS management** - Automatically creates or updates the
 //!   `.gitattributes` file to ensure large binaries are tracked by Git LFS.
-//! - **Extensible design** — Easily configured to support new sidecars,
+//! - **Extensible design** - Easily configured to support new sidecars,
 //!   versions, and platforms.
-//! - **Robust error handling** — Uses `anyhow` for clear and concise error
+//! - **Robust error handling** - Uses `anyhow` for clear and concise error
 //!   reporting.
-//! - **Preserved file structure** — The final output directory structure
+//! - **Preserved file structure** - The final output directory structure
 //!   remains identical to the original script
 //!   (`Architecture/SidecarName/Version`).
 
@@ -658,7 +658,7 @@ pub fn Logger() {
 ///
 /// ## Errors
 ///
-/// Returns an [`anyhow::Error`] if any step in the pipeline fails — network
+/// Returns an [`anyhow::Error`] if any step in the pipeline fails - network
 /// errors, checksum mismatches, filesystem issues, etc.
 ///
 /// ## Panics
@@ -815,27 +815,59 @@ pub async fn Fn() -> Result<()> {
 			.await;
 
 		// Check for any errors that occurred during the concurrent tasks.
-		let mut ErrorsEncountered = 0;
+		// A joined task is Result<anyhow::Result<()>, JoinError>: the outer
+		// error is a spawn-time panic/cancellation, the inner error is a
+		// per-file failure already reported by `ProcessDownloadTask`.
+		// Capture the expected count before consuming `Results` so the
+		// failure message can name both how many tasks failed and how many
+		// were attempted (a missing/zero count can never read as success).
+		let TotalTasks = Results.len();
+		let mut ErrorsEncountered: usize = 0;
 
-		for Result in Results {
-			// The first result is from tokio::spawn, the second from our
-			// function
-			if let Err(JoinError) = Result {
-				error!("A download task panicked or was cancelled: {}", JoinError);
+		for TaskResult in Results {
+			match TaskResult {
+				// The spawned task never produced a result: it was cancelled
+				// or panicked. Both are failures - never fold either into a
+				// successful run, whatever the inner pipeline reported.
+				Err(JoinError) if JoinError.is_cancelled() => {
+					warn!("A download task was cancelled: {}", JoinError);
 
-				ErrorsEncountered += 1;
-			} else if let Ok(Err(AppError)) = Result {
-				// We already logged the error inside `ProcessDownloadTask`, so
-				// just count it. Re-logging here to ensure it's
-				// captured at a higher level if needed.
-				error!("A download task failed: {}", AppError);
+					ErrorsEncountered += 1;
+				}
+				Err(JoinError) => {
+					error!("A download task panicked: {}", JoinError);
 
-				ErrorsEncountered += 1;
+					ErrorsEncountered += 1;
+				}
+				// The task ran but reported a failure. Its detail is already
+				// logged inside `ProcessDownloadTask`; re-log here so it is
+				// visible at the pipeline boundary too, then count it.
+				Ok(Err(AppError)) => {
+					error!("A download task failed: {}", AppError);
+
+					ErrorsEncountered += 1;
+				}
+				// A genuinely successful task adds nothing to the error count
+				// and leaves the success path untouched.
+				Ok(Ok(())) => {}
 			}
 		}
 
 		if ErrorsEncountered > 0 {
-			error!("Completed with {} errors.", ErrorsEncountered);
+			error!(
+				"Completed with {} of {} download task(s) in error; aborting vendoring before finalization.",
+				ErrorsEncountered, TotalTasks
+			);
+
+			// Propagate the aggregate failure to both entry points - the
+			// standalone `main` below and the binary `main` in main.rs both
+			// turn an Err from `Fn` into a non-zero exit status. Individual
+			// task errors above stay logged; this names the failing operation
+			// (vendoring download) and its count at the pipeline boundary.
+			return Err(anyhow!(
+				"Sidecar vendoring download failed: {} of {} download task(s) failed (panic, cancellation, or per-file error); no usable sidecar set can be guaranteed",
+				ErrorsEncountered, TotalTasks
+			));
 		}
 	}
 
