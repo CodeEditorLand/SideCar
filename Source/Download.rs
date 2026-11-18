@@ -649,8 +649,9 @@ pub fn Logger() {
 /// 4. Loads or initialises the download cache (`Cache.json`).
 /// 5. Fetches the platform matrix and sidecar definitions.
 /// 6. Downloads all required binaries concurrently.
-/// 7. Extracts, verifies, and places each binary in the correct output
-///    directory, cleaning up temporary files on completion.
+/// 7. Extracts and places each binary in the correct output directory,
+///    cleaning up temporary files on completion (no checksum verification
+///    is performed today).
 ///
 /// ## Returns
 ///
@@ -659,7 +660,8 @@ pub fn Logger() {
 /// ## Errors
 ///
 /// Returns an [`anyhow::Error`] if any step in the pipeline fails - network
-/// errors, checksum mismatches, filesystem issues, etc.
+/// errors, filesystem issues, etc. (checksum verification is not performed
+/// today, so checksum mismatches cannot arise).
 ///
 /// ## Panics
 ///

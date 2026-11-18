@@ -12,20 +12,22 @@
 //! # SideCar: Pre-Built Node.js Binary Manager
 //!
 //! Cocoon needs Node.js to run VS Code extensions. SideCar manages the
-//! embedded Node.js binary: downloading platform-specific builds, verifying
-//! integrity, and spawning Node.js as a Tauri sidecar process.
+//! embedded Node.js binary: downloading platform-specific builds and spawning
+//! Node.js as a Tauri sidecar process. Checksum verification of downloads is
+//! not performed today.
 //!
 //! No system Node.js installation required - Land ships its own.
 //!
 //! ## Overview
 //!
 //! 1. **Downloads** the correct Node.js binary for the current OS and arch
-//! 2. **Verifies** the download checksum before extracting
+//! 2. **Extracts** the download; no checksum verification is performed today
 //! 3. **Spawns** Node.js as a managed sidecar that Mountain can monitor
 //!
 //! ## Modules
 //!
-//! - [`Download`]: Platform-aware binary fetching and checksum verification
+//! - [`Download`]: Platform-aware binary fetching (no checksum verification
+//!   is performed today)
 //!
 //! ## Binary targets
 //!
@@ -34,9 +36,9 @@
 //! - `Download` (`Source/Download.rs`): Standalone vendoring binary that
 //!   downloads sidecar runtimes into the repository.
 
-/// Platform-aware binary download and verification module.
+/// Platform-aware binary download module (checksum verification is not
+/// performed today).
 ///
-/// Downloads Node.js binaries for the current OS/arch, verifies checksums,
-/// manages a download cache (`Cache.json`), and maintains `.gitattributes`
-/// for Git LFS tracking.
+/// Downloads Node.js binaries for the current OS/arch, manages a download
+/// cache (`Cache.json`), and maintains `.gitattributes` for Git LFS tracking.
 pub mod Download;

@@ -11,9 +11,10 @@
 //! SideCar binary entry point
 //!
 //! Application entry point that initialises telemetry, then runs the full
-//! sidecar vendoring pipeline (platform resolution, download, checksum
-//! verification, cache and `.gitattributes` bookkeeping) directly against
-//! [`SideCar::Download`]. The library target intentionally holds no `main`.
+//! sidecar vendoring pipeline (platform resolution, download, cache and
+//! `.gitattributes` bookkeeping) directly against [`SideCar::Download`].
+//! Checksum verification is not performed today. The library target
+//! intentionally holds no `main`.
 
 use log::error;
 
