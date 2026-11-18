@@ -343,6 +343,23 @@ fn GetSidecarsToFetch() -> HashMap<String, Vec<String>> {
 /// Supported levels: `error`, `warn`, `info`, `debug`, `trace`.
 pub const LogEnv:&str = "RUST_LOG";
 
+/// Total per-request timeout for the shared vendoring HTTP client.
+///
+/// Node.js distribution archives are large and a slow mirror can take a
+/// while, but a peer that stops responding without closing the connection
+/// must not hang the vendoring process forever. Ten minutes bounds the entire
+/// request (connect, response headers, and the streamed body at `DownloadFile`)
+/// while leaving ample room for a legitimate large download.
+pub const RequestTimeout:Duration = Duration::from_secs(600);
+
+/// TCP/TLS connect timeout for the shared vendoring HTTP client.
+///
+/// Reaching the Node.js distribution host should complete quickly. Thirty
+/// seconds bounds DNS resolution and a stalled handshake without rejecting a
+/// slow-but-live network, and is applied to every request made with the
+/// client (the version index fetch and each archive download).
+pub const ConnectTimeout:Duration = Duration::from_secs(30);
+
 /// Manages the `.gitattributes` file to ensure binaries are tracked by Git LFS.
 /// If the file does not exist, it is created. If it exists, missing rules are
 /// appended.
@@ -472,15 +489,75 @@ fn ResolveLatestPatchVersion(MajorVersion:&str, AllVersions:&[NodeVersionInfo]) 
 }
 
 /// Downloads a file from a URL to a specified path.
+///
+/// The supplied client carries explicit total-request and connect timeouts,
+/// so a stalled peer surfaces as a `reqwest` timeout error rather than hanging
+/// the caller forever. Any error here is returned to `ProcessDownloadTask`,
+/// which reports it and lets `Fn` fail the whole pipeline (non-zero exit).
 async fn DownloadFile(Client:&Client, URL:&str, DestinationPath:&Path) -> Result<()> {
-	let mut Response = Client.get(URL).send().await?.error_for_status()?;
+	let mut Response = Client
+		.get(URL)
+		.send()
+		.await
+		.with_context(|| format!("Timed out or failed to send download request to {}", URL))?
+		.error_for_status()?;
+
+	// Remember the advertised size so an early-closing stream (a partial
+	// download) can never be mistaken for a successful, complete file.
+	let ExpectedLength = Response.content_length();
 
 	let mut DestinationFile =
 		File::create(DestinationPath).with_context(|| format!("Failed to create file at {:?}", DestinationPath))?;
 
+	let mut BytesWritten:u64 = 0;
+
 	// Stream the download to handle large files without high memory usage.
-	while let Some(Chunk) = Response.chunk().await? {
-		DestinationFile.write_all(&Chunk)?;
+	// A reqwest timeout is a normal error: warn with the operation, the URL
+	// and the byte count, then propagate it as a failed task - never panic,
+	// never silently retry in a tight loop, never report success on a stall.
+	loop {
+		match Response.chunk().await {
+			Ok(Some(Chunk)) => {
+				DestinationFile.write_all(&Chunk)?;
+
+				BytesWritten += Chunk.len() as u64;
+			},
+			Ok(None) => break,
+			Err(RequestError) => {
+				if RequestError.is_timeout() {
+					warn!(
+						"      Download from {} timed out after {} byte(s); aborting this file.",
+						URL, BytesWritten
+					);
+				} else {
+					warn!(
+						"      Stream from {} closed with an error after {} byte(s): {}",
+						URL, BytesWritten, RequestError
+					);
+				}
+
+				return Err(RequestError).with_context(|| {
+					format!("Failed to read download body from {} after {} byte(s)", URL, BytesWritten)
+				});
+			},
+		}
+	}
+
+	// A stream that ends before the advertised Content-Length is a partial
+	// download. Warn and fail rather than installing a truncated archive and
+	// reporting success for it.
+	if let Some(Expected) = ExpectedLength {
+		if BytesWritten < Expected {
+			warn!(
+				"      Partial download from {}: received {} of {} byte(s); discarding.",
+				URL, BytesWritten, Expected
+			);
+
+			return Err(anyhow!(
+				"Partial download from {}: received {} of {} byte(s)",
+				URL, BytesWritten, Expected
+			));
+		}
 	}
 
 	Ok(())
@@ -590,7 +667,17 @@ async fn ProcessDownloadTask(Task:DownloadTask, Client:Client, Cache:Arc<Mutex<D
 	// Update the cache with the new version.
 	let CacheKey = format!("{}/{}/{}", Task.TauriTargetTriple, Task.SidecarName, Task.MajorVersion);
 
-	let mut LockedCache = Cache.lock().unwrap();
+	let mut LockedCache = match Cache.lock() {
+		Ok(Guard) => Guard,
+		Err(Poisoned) => {
+			warn!(
+				"      [{}/{}] Cache mutex poisoned while recording a downloaded version; recovering cache data instead of panicking.",
+				Task.TauriTargetTriple, Task.SidecarName
+			);
+
+			Poisoned.into_inner()
+		},
+	};
 
 	LockedCache.Entries.insert(CacheKey, Task.FullVersion.clone());
 
@@ -670,7 +757,13 @@ pub fn Logger() {
 #[tokio::main]
 pub async fn Fn() -> Result<()> {
 	// [Boot] [Telemetry] Bring up shared dual-pipe (PostHog + OTLP).
-	// No-op in release builds and when `Capture=false`.
+	// No-op in release builds and when `Capture=false`. This is the single
+	// canonical telemetry init for BOTH binaries: `Download` calls `Fn`
+	// directly, and `SideCar`'s main delegates to `Fn` too. Do not add a
+	// second call in main.rs - Common's Initialize.rs is not idempotent
+	// (it discards the `OnceLock::set` result at :25 and still reaches
+	// CaptureSession at :47), so a second call emits a duplicate session
+	// event. Tier::SideCar is the correct context for both entry points.
 	CommonLibrary::Telemetry::Initialize::Fn(CommonLibrary::Telemetry::Tier::Tier::SideCar).await;
 
 	Logger();
@@ -693,7 +786,26 @@ pub async fn Fn() -> Result<()> {
 
 	let Cache = Arc::new(Mutex::new(DownloadCache::Load(&CachePath)));
 
-	let HttpClient = Client::new();
+	// Defensive: a zero duration would disable the bound and reintroduce the
+	// indefinite hang this change removes. Warn and fail loudly rather than
+	// start an unbounded vendoring run or silently report success on a stall.
+	if RequestTimeout.as_secs() == 0 || ConnectTimeout.as_secs() == 0 {
+		warn!(
+			"Vendoring HTTP timeout configuration is invalid (zero duration); refusing to start unbounded downloads."
+		);
+
+		return Err(anyhow!("Invalid vendoring HTTP timeout configuration: zero duration."));
+	}
+
+	// Build the shared client with explicit bounds. reqwest defaults every
+	// timeout to `None`, so without these a peer that stops answering the
+	// chunk stream in `DownloadFile` can hang the pipeline forever. The same
+	// client backs the version-index fetch and every archive download.
+	let HttpClient = Client::builder()
+		.timeout(RequestTimeout)
+		.connect_timeout(ConnectTimeout)
+		.build()
+		.with_context(|| "Failed to build the vendoring HTTP client with timeouts.")?;
 
 	let PlatformMatrix = GetPlatformMatrix();
 
@@ -736,7 +848,17 @@ pub async fn Fn() -> Result<()> {
 					// Check cache to see if we need to download/update.
 					let CacheKey = format!("{}/{}/{}", &Platform.TauriTargetTriple, SidecarName, MajorVersion);
 
-					let CachedVersion = Cache.lock().unwrap().Entries.get(&CacheKey).cloned();
+					let CachedVersion = match Cache.lock() {
+					Ok(Guard) => Guard.Entries.get(&CacheKey).cloned(),
+					Err(Poisoned) => {
+						warn!(
+							"      Cache mutex poisoned while reading the cached version for '{}'; recovering cache data instead of panicking.",
+							CacheKey
+						);
+
+						Poisoned.into_inner().Entries.get(&CacheKey).cloned()
+					},
+				};
 
 					if Some(FullVersion.clone()) == CachedVersion {
 						info!("    v{} ({}) is already up to date, skipping.", MajorVersion, FullVersion);
@@ -876,7 +998,16 @@ pub async fn Fn() -> Result<()> {
 	// --- Finalization ---
 	info!("Saving updated cache...");
 
-	Cache.lock().unwrap().Save(&CachePath)?;
+	match Cache.lock() {
+		Ok(Guard) => Guard.Save(&CachePath)?,
+		Err(Poisoned) => {
+			warn!(
+				"Cache mutex poisoned while saving the download cache; recovering cache data to avoid a panic and retrying the save."
+			);
+
+			Poisoned.into_inner().Save(&CachePath)?
+		},
+	};
 
 	info!("All sidecar binaries have been successfully processed and organized.");
 
@@ -905,6 +1036,7 @@ use std::{
 	io::Write,
 	path::{Path, PathBuf},
 	sync::{Arc, Mutex},
+	time::Duration,
 };
 
 use anyhow::{Context, Result, anyhow};
